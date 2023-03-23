@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" class="background-styles">
+<head>
+    <meta charset="UTF-8">
+    <title>Resume</title>
+    <link rel="stylesheet" href="/static/style2.css">
+</head>
+<body>
+    <h1 class="text-styles">Sign In</h1>
+    <form action="" method="post" novalidate class="form-styles">
+
+        {{ user.hidden_tag() }}
+        <p>
+            {{ user.user_id.label }}<br>
+            {{ user.user_id(size=32) }}
+        </p>
+          <p>
+            {{ user.password.label }}<br>
+            {% for error in user.password.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            {{ user.password(size=32) }}
+        </p>
+        <p>{{ user.submit() }}</p>
+    </form>
+</body>
+</html>
