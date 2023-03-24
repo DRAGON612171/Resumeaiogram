@@ -2,7 +2,7 @@ import telebot
 from telebot.types import InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup
 import random
 import string
-from Resumeaiogram.app import writeTable
+from app.main_db import writeTable
 from config import *
 
 bot = telebot.TeleBot(Token)

@@ -1,7 +1,8 @@
 import psycopg2
 import sshtunnel
 import json
-from Resumeaiogram.config import *
+
+from config import *
 
 
 def rewrite(right):
