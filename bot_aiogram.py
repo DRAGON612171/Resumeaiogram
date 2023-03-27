@@ -4,9 +4,12 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, message, chat, me
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from steps import *
+from config import *
 
-bot = Bot(token = "6264597461:AAFBhnKaE1sKSL77k7EmeimuNr8L5i70RKo")
+
+bot = Bot(token=Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
+
 
 def but_create():
     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
