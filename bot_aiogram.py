@@ -23,8 +23,9 @@ async def start(message: types.Message):
     await bot.send_message(message.chat.id, '👋Привіт!👋\n'  
                                             '😃Це бот для створення резюме, думаю тобі сподобається😃'.format(message.from_user.first_name), reply_markup=but_create())
 
+
 @dp.message_handler(state=None, content_types=['text'])
-async def message_reply (message: types.Message):
+async def message_reply(message: types.Message):
     if message.text == '📄Створити резюме📄':
         reply_markup1 = ReplyKeyboardMarkup(resize_keyboard=True)
         await bot.send_message(message.chat.id, 'Напишіть ваше ім’я і прізвище', reply_markup=reply_markup1)
@@ -34,9 +35,8 @@ async def message_reply (message: types.Message):
         print('Name {}'.format(item))
 
 
-
 @dp.message_handler(state=Steps.phone_number)
-async def message_reply (message: types.Message):
+async def message_reply(message: types.Message):
     await bot.send_message(message.chat.id, 'Напишіть ваш номер телефону')
     item1 = message.text
     await Steps.phone_number.set()
@@ -44,23 +44,40 @@ async def message_reply (message: types.Message):
     print('number {}'.format(item1))
 
 
-
-
 @dp.message_handler(state=Steps.email)
-async def message_reply (message: types.Message):
+async def message_reply(message: types.Message):
     await bot.send_message(message.chat.id, 'Напишіть ваш email')
     item2 = message.text
     await Steps.email.set()
     await Steps.next()
     print('email {}'.format(item2))
 
-@dp.message_handler(state=Steps.education )
+
+@dp.message_handler(state=Steps.education)
 async def message_reply(message: types.Message):
     await bot.send_message(message.chat.id, 'Напишіть рівень вашої освіти')
     item3 = message.text
     await Steps.education.set()
     await Steps.next()
     print('education {}'.format(item3))
+
+
+@dp.message_handler(state=Steps.tech_skills)
+async def message_reply(message: types.Message):
+    await bot.send_message(message.chat.id, 'Напишіть ваші Tech Skills')
+    item4 = message.text.split(",")
+    await Steps.tech_skills.set()
+    await Steps.next()
+    print('tech_skills {}'.format(item4))
+
+
+@dp.message_handler(state=Steps.soft_skills)
+async def message_reply(message: types.Message):
+    await bot.send_message(message.chat.id, 'Напишіть ваші Soft Skills')
+    item5 = message.text.split(",")
+    await Steps.soft_skills.set()
+    await Steps.next()
+    print('soft_skills {}'.format(item5))
 
 
 if __name__ == '__main__':
