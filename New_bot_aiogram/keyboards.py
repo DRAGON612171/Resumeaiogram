@@ -1,11 +1,11 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 
 
-# async def but_create():
-#     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
-#     but1 = KeyboardButton('📄Створити резюме📄')
-#     reply_markup.add(but1)
-#     return reply_markup
+async def but_create():
+    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    but1 = KeyboardButton('📄Створити резюме📄')
+    reply_markup.add(but1)
+    return reply_markup
 #
 # async def end_keyboard():
 #     markup = InlineKeyboardMarkup(row_width=1)
