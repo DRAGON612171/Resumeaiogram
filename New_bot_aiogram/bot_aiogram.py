@@ -7,7 +7,7 @@ from keyboards import *
 from config import *
 
 
-bot = Bot(token='6293978454:AAEXU0P3GRT1-me0yLkpBqmNF0noanfQemM')
+bot = Bot(token=Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 @dp.message_handler(commands=['start'])
