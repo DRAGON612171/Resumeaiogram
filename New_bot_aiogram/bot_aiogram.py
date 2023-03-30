@@ -2,13 +2,15 @@ from aiogram import types, Dispatcher, Bot
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+
+from Resumeaiogram import config
 from steps import *
 from keyboards import *
-from config import *
 
 
-bot = Bot(token=Token)
+bot = Bot(token=config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
+
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
@@ -20,12 +22,15 @@ async def start(message: types.Message):
 #     but1 = KeyboardButton('📄Створити резюме📄')
 #     reply_markup.add(but1)
 #     return reply_markup
+
+
 @dp.message_handler(content_types=['text'])
 async def name_surname(message: types.Message):
     if message.text == '📄Створити резюме📄':
         reply_markup1 = ReplyKeyboardMarkup(resize_keyboard=True)
         await message.answer('Напишіть ваше ім’я і прізвище', reply_markup=reply_markup1)
         await Steps.name_surname.set()
+
 
 @dp.message_handler(content_types=['text'], state=Steps.name_surname)
 async def name_surname2(message: types.Message):
@@ -49,12 +54,16 @@ async def get_email (message: types.Message):
     print('email {}'.format(get_email))
     await Steps.get_education.set()
     await message.answer('Напишіть рівень вашої освіти')
+
+
 @dp.message_handler(state=Steps.get_education)
 async def get_education(message: types.Message):
     get_education = message.text
     print('education {}'.format(get_education))
     await Steps.get_tech_skills.set()
     await message.answer('Напишіть ваші Tech Skills')
+
+
 @dp.message_handler(state=Steps.get_tech_skills)
 async def get_tech_skills(message: types.Message):
     get_tech_skills = message.text
@@ -70,12 +79,14 @@ async def get_soft_skills (message: types.Message()):
     await Steps.get_projects.set()
     await message.answer('Додайте посилання на ваші проекти')
 
+
 @dp.message_handler(state=Steps.get_projects)
 async def get_soft_skills(message: types.Message):
     get_projects = message.text
     print('projects {}'.format(get_projects))
     await Steps.get_lang.set()
     await message.answer('Напишіть з які ви знаєте мови')
+
 
 @dp.message_handler(state=Steps.get_lang)
 async def get_lang(message: types.Message):
@@ -108,12 +119,14 @@ async def get_city(message: types.Message):
     await Steps.get_profession.set()
     await message.answer('Напишіть на яку посаду претендуєте')
 
+
 @dp.message_handler(state=Steps.get_profession)
 async def get_profession(message: types.Message):
     get_profession = message.text
     print('profession {}'.format(get_profession))
     await Steps.get_description.set()
     await message.answer('Напишіть, що ви очікуєте від цієї посади(можете розповісти щось про себе')
+
 
 @dp.message_handler(state=Steps.get_description)
 async def get_description(message: types.Message):

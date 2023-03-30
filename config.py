@@ -4,10 +4,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 Token = os.getenv('BOT_TOKEN')
-ssh_username = os.getenv('SERVER_SHH_USERNAME')
-ssh_password = os.getenv('SERVER_SSH_PASSWORD')
-connect_password = os.getenv('SERVER_CONNECT_PASSWORD')
-hostname = os.getenv('HOST_NAME')
+Server_username = os.getenv('SERVER_USERNAME')
+Server_password = os.getenv('SERVER_PASSWORD')
+Server_host = os.getenv('HOST_NAME')
+Server_port = os.getenv('PORT')
+Database = os.getenv('DATABASE')
 
 
 class Config(object):
