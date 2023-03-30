@@ -1,6 +1,10 @@
 import asyncpg
+import os
+import sys
+sys.path.append(os.getcwd())
+import config
 
-from Resumeaiogram import config
+
 
 
 class Database:

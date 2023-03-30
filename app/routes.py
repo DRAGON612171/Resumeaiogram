@@ -1,7 +1,10 @@
+import asyncio
+
 from app import app
 from flask import render_template, redirect, url_for
 from .forms import LoginForm
-from .main_db import readTable
+from .database.db_executions import *
+
 
 right_tuple = ''
 
@@ -11,7 +14,7 @@ right_tuple = ''
 def login():
     global right_tuple
     user = LoginForm()
-    result = readTable()
+    result = asyncio.run(select_all())
     if user.validate_on_submit():
         for data_tuple in result:
             if int(user.user_id.data) in data_tuple and data_tuple[9] == str(user.password.data):

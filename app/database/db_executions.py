@@ -1,4 +1,4 @@
-from db_connection import Database
+from .db_connection import Database
 import asyncio
 
 
@@ -19,6 +19,4 @@ async def select_all():
 
     # Отключение от базы данных
     await db.disconnect()
-
-
-
+    return right_values
