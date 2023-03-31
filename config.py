@@ -9,6 +9,8 @@ Server_password = os.getenv('SERVER_PASSWORD')
 Server_host = os.getenv('HOST_NAME')
 Server_port = os.getenv('PORT')
 Database = os.getenv('DATABASE')
+Ssh_username = os.getenv('SSH_USERNAME')
+Ssh_password = os.getenv('SSH_PASSWORD')
 
 
 class Config(object):
