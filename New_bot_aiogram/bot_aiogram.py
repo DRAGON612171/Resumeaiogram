@@ -1,14 +1,15 @@
+import asyncio
 from aiogram import types, Dispatcher, Bot
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup
+from aiogram.types import ReplyKeyboardMarkup
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from Resumeaiogram import config
+from Resumeaiogram.app.database import db_executions
 from steps import *
-from keyboards import *
+from keyboards import but_create
 
 
-bot = Bot(token=config.Token)
+bot = Bot(token='6146197636:AAH-kokmD73gVwykAEOiqA4saLgPoRuV0x4')
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
@@ -16,6 +17,8 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 async def start(message: types.Message):
     await bot.send_message(message.chat.id, '👋Привіт!👋\n'  
                                             '😃Це бот для створення резюме, думаю тобі сподобається😃'.format(message.from_user.first_name), reply_markup=but_create())
+    from Resumeaiogram.New_bot_aiogram import db_executions
+    await db_executions.add_id(message.chat.id)
 
 # def but_create():
 #     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
@@ -34,22 +37,22 @@ async def name_surname(message: types.Message):
 
 @dp.message_handler(content_types=['text'], state=Steps.name_surname)
 async def name_surname2(message: types.Message):
-    item = message.text
-    print('name_surname {}'.format(item))
+    asyncio.run(db_executions.add_name_surname(message.chat.id, message.text))
+    print('name_surname {}'.format(message.text))
     await Steps.phone_number.set()
     await message.answer('Напишіть ваш номер телефону')
 
 
 @dp.message_handler(content_types=['text'], state=Steps.phone_number)
 async def phone_number(message: types.Message):
-    phone_number = message.text
+    asyncio.run(db_executions.add_name_surname(message.chat.id, message.text))
     print('phone_number {}'.format(phone_number))
     await Steps.get_email.set()
     await message.answer('Напишіть ваш email')
 
 
 @dp.message_handler(state=Steps.get_email)
-async def get_email (message: types.Message):
+async def get_email(message: types.Message):
     get_email = message.text
     print('email {}'.format(get_email))
     await Steps.get_education.set()
@@ -97,7 +100,7 @@ async def get_lang(message: types.Message):
 
 
 @dp.message_handler(state=Steps.get_lang_level)
-async def get_lang(message: types.Message):
+async def get_lang_level(message: types.Message):
     get_lang_level = message.text
     print('lang_level {}'.format(get_lang_level))
     await Steps.get_country.set()
