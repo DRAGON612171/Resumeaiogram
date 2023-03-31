@@ -37,7 +37,9 @@
             <!-- Education-->
             <div class="education">
                 <h3 class="main_title">Education</h3>
-                <h4>{{education}}</h4>
+                {% for i in range( education | length) %}
+                <h4>{{education[i]}}</h4>
+                {% endfor %}
             </div>
             <!-- Work experience -->
             <div class="experience">
