@@ -36,8 +36,6 @@ def resume():
     past_work = ''
     how_long = ''
     job_description = ''
-    user_id = ''
-    rand_password = ''
     description = ''
 
     def portal():
@@ -46,19 +44,19 @@ def resume():
         name_surname = right_tuple[1]
         phone_number = right_tuple[2]
         email = right_tuple[3]
-        education = right_tuple[4]
-        lang = right_tuple[5]
-        lang_level = right_tuple[6]
+        education = right_tuple[4].split(',')
+        lang = right_tuple[5].split(',')
+        lang_level = right_tuple[6].split(',')
         country = right_tuple[7]
         city = right_tuple[8]
         description = right_tuple[10]
         profession = right_tuple[11]
-        past_work = right_tuple[-1]
-        job_description = right_tuple[-2]
-        how_long = right_tuple[-3]
-        projects = right_tuple[-4]
-        tech_skills = right_tuple[-5]
-        soft_skills = right_tuple[-6]
+        past_work = right_tuple[-1].split(',')
+        job_description = right_tuple[-2].split(',')
+        how_long = right_tuple[-3].split(',')
+        projects = right_tuple[-4].split(',')
+        tech_skills = right_tuple[-5].split(',')
+        soft_skills = right_tuple[-6].split(',')
 
     portal()
 
