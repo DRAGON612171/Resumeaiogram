@@ -1,30 +1,28 @@
-import asyncio
+# import asyncio
 from aiogram import types, Dispatcher, Bot
-from aiogram.types import ReplyKeyboardMarkup
-from aiogram.utils import executor
+from aiogram.dispatcher import FSMContext
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils import executor, callback_data
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from Resumeaiogram.app.database import db_executions
+import config
+# from app.database import db_executions
+
+Resumeaigram.app.database import db_executions
 from steps import *
-from keyboards import but_create
+from keyboards import *
 
-
-bot = Bot(token='6146197636:AAH-kokmD73gVwykAEOiqA4saLgPoRuV0x4')
+bot = Bot(token=config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     await bot.send_message(message.chat.id, '👋Привіт!👋\n'  
-                                            '😃Це бот для створення резюме, думаю тобі сподобається😃'.format(message.from_user.first_name), reply_markup=but_create())
+                                            '😃Це бот для створення резюме, думаю тобі сподобається😃'.format(message.from_user.first_name), reply_markup=but_create)
+    from app.database import db_executions
     from Resumeaiogram.New_bot_aiogram import db_executions
     await db_executions.add_id(message.chat.id)
-
-# def but_create():
-#     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
-#     but1 = KeyboardButton('📄Створити резюме📄')
-#     reply_markup.add(but1)
-#     return reply_markup
 
 
 @dp.message_handler(content_types=['text'])
@@ -37,7 +35,8 @@ async def name_surname(message: types.Message):
 
 @dp.message_handler(content_types=['text'], state=Steps.name_surname)
 async def name_surname2(message: types.Message):
-    asyncio.run(db_executions.add_name_surname(message.chat.id, message.text))
+    name_surname2 = message.text
+    # asyncio.run(db_executions.add_name_surname(message.chat.id, message.text))
     print('name_surname {}'.format(message.text))
     await Steps.phone_number.set()
     await message.answer('Напишіть ваш номер телефону')
@@ -45,7 +44,8 @@ async def name_surname2(message: types.Message):
 
 @dp.message_handler(content_types=['text'], state=Steps.phone_number)
 async def phone_number(message: types.Message):
-    asyncio.run(db_executions.add_name_surname(message.chat.id, message.text))
+    phone_number = message.text
+    # asyncio.run(db_executions.add_name_surname(message.chat.id, message.text))
     print('phone_number {}'.format(phone_number))
     await Steps.get_email.set()
     await message.answer('Напишіть ваш email')
@@ -61,11 +61,14 @@ async def get_email(message: types.Message):
 
 @dp.message_handler(state=Steps.get_education)
 async def get_education(message: types.Message):
-    get_education = message.text
-    print('education {}'.format(get_education))
-    await Steps.get_tech_skills.set()
-    await message.answer('Напишіть ваші Tech Skills')
-
+    education_list = []
+    if message.text.lower() == 'stop':
+        await Steps.get_tech_skills.set()
+        await message.answer('Напишіть ваші Tech Skills')
+    else:
+        education_list.append(message.text)
+        await message.answer('Напишіть рівень вашої освіти', reply_markup=lists)
+        print(education_list)
 
 @dp.message_handler(state=Steps.get_tech_skills)
 async def get_tech_skills(message: types.Message):
@@ -155,6 +158,7 @@ async def get_job_description(message: types.Message):
     await message.answer('Скільки часу ви займали цю посаду?')
 
 
+
 @dp.message_handler(state=Steps.get_how_long)
 async def get_how_long(message: types.Message):
     get_how_long = message.text
@@ -176,7 +180,9 @@ async def get_how_long(message: types.Message):
                          f"Ваш минулий досвід роботи(минула посада): {get_work_experience}\n"
                          f"Що ви робили на цій посаді: {get_job_description}\n"
                          f"Скільки часу ви займали цю посаду: {get_how_long}\n"
-                         "Чи хочете відредагувати свої дані?'\n")
+                         "Чи хочете відредагувати свої дані?'\n", reply_markup=changes)
+
+
 
 
 
