@@ -127,9 +127,3 @@ async def add_password(id, value):
     await db.connect()
     await db.execute(f'''UPDATE public.resume_db1 SET password = '{value}' WHERE id = {id};''')
     await db.disconnect()
-
-
-async def add_password(id, value):
-    await db.connect()
-    await db.execute(f'''UPDATE public.resume_db1 SET password = '{value}' WHERE id = {id};''')
-    await db.disconnect()

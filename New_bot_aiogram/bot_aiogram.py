@@ -1,14 +1,13 @@
 # import asyncio
+import asyncio
+
 from aiogram import types, Dispatcher, Bot
 from aiogram.dispatcher import FSMContext
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils import executor, callback_data
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-
-import config
+from Resumeaiogram.app.database import db_executions
+from Resumeaiogram import config
 # from app.database import db_executions
-
-Resumeaigram.app.database import db_executions
 from steps import *
 from keyboards import *
 
@@ -20,8 +19,7 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 async def start(message: types.Message):
     await bot.send_message(message.chat.id, '👋Привіт!👋\n'  
                                             '😃Це бот для створення резюме, думаю тобі сподобається😃'.format(message.from_user.first_name), reply_markup=but_create)
-    from app.database import db_executions
-    from Resumeaiogram.New_bot_aiogram import db_executions
+    await db_executions.add_id(message.chat.id)
     await db_executions.add_id(message.chat.id)
 
 
@@ -35,8 +33,7 @@ async def name_surname(message: types.Message):
 
 @dp.message_handler(content_types=['text'], state=Steps.name_surname)
 async def name_surname2(message: types.Message):
-    name_surname2 = message.text
-    # asyncio.run(db_executions.add_name_surname(message.chat.id, message.text))
+    await db_executions.add_name_surname(message.chat.id, message.text)
     print('name_surname {}'.format(message.text))
     await Steps.phone_number.set()
     await message.answer('Напишіть ваш номер телефону')
@@ -156,7 +153,6 @@ async def get_job_description(message: types.Message):
     print('get_job_description {}'.format(get_job_description))
     await Steps.get_how_long.set()
     await message.answer('Скільки часу ви займали цю посаду?')
-
 
 
 @dp.message_handler(state=Steps.get_how_long)
