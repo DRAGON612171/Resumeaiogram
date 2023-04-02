@@ -1,12 +1,15 @@
-from aiogram import types, Dispatcher, Bot
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup
-from aiogram.utils import executor
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
+# import asyncio
+import asyncio
 
+from aiogram import types, Dispatcher, Bot
+from aiogram.dispatcher import FSMContext
+from aiogram.utils import executor, callback_data
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from Resumeaiogram.app.database import db_executions
 from Resumeaiogram import config
+# from app.database import db_executions
 from steps import *
 from keyboards import *
-
 
 bot = Bot(token=config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -15,13 +18,9 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     await bot.send_message(message.chat.id, '👋Привіт!👋\n'  
-                                            '😃Це бот для створення резюме, думаю тобі сподобається😃'.format(message.from_user.first_name), reply_markup=but_create())
-
-# def but_create():
-#     reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
-#     but1 = KeyboardButton('📄Створити резюме📄')
-#     reply_markup.add(but1)
-#     return reply_markup
+                                            '😃Це бот для створення резюме, думаю тобі сподобається😃'.format(message.from_user.first_name), reply_markup=but_create)
+    await db_executions.add_id(message.chat.id)
+    await db_executions.add_id(message.chat.id)
 
 
 @dp.message_handler(content_types=['text'])
@@ -34,8 +33,8 @@ async def name_surname(message: types.Message):
 
 @dp.message_handler(content_types=['text'], state=Steps.name_surname)
 async def name_surname2(message: types.Message):
-    item = message.text
-    print('name_surname {}'.format(item))
+    await db_executions.add_name_surname(message.chat.id, message.text)
+    print('name_surname {}'.format(message.text))
     await Steps.phone_number.set()
     await message.answer('Напишіть ваш номер телефону')
 
@@ -43,13 +42,14 @@ async def name_surname2(message: types.Message):
 @dp.message_handler(content_types=['text'], state=Steps.phone_number)
 async def phone_number(message: types.Message):
     phone_number = message.text
+    # asyncio.run(db_executions.add_name_surname(message.chat.id, message.text))
     print('phone_number {}'.format(phone_number))
     await Steps.get_email.set()
     await message.answer('Напишіть ваш email')
 
 
 @dp.message_handler(state=Steps.get_email)
-async def get_email (message: types.Message):
+async def get_email(message: types.Message):
     get_email = message.text
     print('email {}'.format(get_email))
     await Steps.get_education.set()
@@ -58,10 +58,14 @@ async def get_email (message: types.Message):
 
 @dp.message_handler(state=Steps.get_education)
 async def get_education(message: types.Message):
-    get_education = message.text
-    print('education {}'.format(get_education))
-    await Steps.get_tech_skills.set()
-    await message.answer('Напишіть ваші Tech Skills')
+    education_list = []
+    if message.text.lower() == 'stop':
+        await Steps.get_tech_skills.set()
+        await message.answer('Напишіть ваші Tech Skills')
+    else:
+        education_list.append(message.text)
+        await message.answer('Напишіть рівень вашої освіти', reply_markup=lists)
+        print(education_list)
 
 
 @dp.message_handler(state=Steps.get_tech_skills)
@@ -97,7 +101,7 @@ async def get_lang(message: types.Message):
 
 
 @dp.message_handler(state=Steps.get_lang_level)
-async def get_lang(message: types.Message):
+async def get_lang_level(message: types.Message):
     get_lang_level = message.text
     print('lang_level {}'.format(get_lang_level))
     await Steps.get_country.set()
@@ -156,24 +160,32 @@ async def get_job_description(message: types.Message):
 async def get_how_long(message: types.Message):
     get_how_long = message.text
     print('get_how_long {}'.format(get_how_long))
+    await db_executions.search_user(message.chat.id)
+    result = await db_executions.select_all()
+    right_user = ''
+    for data_tuple in result:
+        if int(message.chat.id) in data_tuple:
+            right_user = data_tuple
     await message.answer("😎Ваше резюме готове, перевірте свої дані:😎\n"
-                         f"Ім'я та прізивще: {name_surname}\n"
-                         f"Номер телефону: {phone_number}\n"
-                         f"Електронна пошта: {get_email}\n"
-                         f"Освіта: {get_education}\n"
-                         f"Tech Навички: {get_tech_skills}\n"
-                         f"Soft Навички: {get_soft_skills}\n"
-                         f"Посилання на ваші проекти: \n"
-                         f"Мови: {get_lang}\n"
-                         f"Рівень знання цих мов:\n"
-                         f"Ваша країна: {get_country}\n"
-                         f"Ваше місто: {get_city}\n"
-                         f"Посада на яку претендуєте: {get_profession}\n"
-                         f"Ваші очікування від роботи: {get_description}\n"
-                         f"Ваш минулий досвід роботи(минула посада): {get_work_experience}\n"
-                         f"Що ви робили на цій посаді: {get_job_description}\n"
-                         f"Скільки часу ви займали цю посаду: {get_how_long}\n"
-                         "Чи хочете відредагувати свої дані?'\n")
+                         f"Ім'я та прізивще: {right_user[1]}\n"
+                         f"Номер телефону: {right_user[2]}\n"
+                         f"Електронна пошта: {right_user[3]}\n"
+                         f"Освіта: {right_user[4]}\n"
+                         f"Tech Навички: {right_user[-5]}\n"
+                         f"Soft Навички: {right_user[-6]}\n"
+                         f"Посилання на ваші проекти: {right_user[-4]}\n"
+                         f"Мови: {right_user[5]}\n"
+                         f"Рівень знання цих мов:{right_user[6]}\n"
+                         f"Ваша країна: {right_user[7]}\n"
+                         f"Ваше місто: {right_user[8]}\n"
+                         f"Посада на яку претендуєте: {right_user[11]}\n"
+                         f"Ваші очікування від роботи: {right_user[10]}\n"
+                         f"Ваш минулий досвід роботи(минула посада): {right_user[-1]}\n"
+                         f"Що ви робили на цій посаді: {right_user[-2]}\n"
+                         f"Скільки часу ви займали цю посаду: {right_user[-3]}\n"
+                         "Чи хочете відредагувати свої дані?'\n", reply_markup=changes)
+
+
 
 
 
