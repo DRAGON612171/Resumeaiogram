@@ -19,7 +19,8 @@ def readTable():
                 database=config.Database)
             cur = connection.cursor()
             cur.execute("""SELECT *
-            FROM public.{};""".format(config.Database))
+FROM public.resume_db1
+WHERE id = 1""")
             result = cur.fetchall()
             print(result)
             connection.close()
@@ -27,3 +28,5 @@ def readTable():
             return result
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+
+readTable()

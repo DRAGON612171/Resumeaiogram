@@ -21,6 +21,15 @@ async def select_all():
     return right_values
 
 
+async def search_user(id):
+    await db.connect()
+    result = await db.execute(f'''SELECT id, name_surname, phone_number, email, education, lang, lang_level, country, city,
+    password, description, profession, soft_skills, tech_skills, projects, how_long, job_description, past_work
+    FROM public.resume_db1 WHERE id={id};''')
+    await db.disconnect()
+    return result
+
+
 async def add_id(id):
     await db.connect()
     await db.execute(f'''INSERT INTO public.resume_db1(id) VALUES ('{id}');''')
@@ -126,4 +135,13 @@ async def add_past_work(id, value):
 async def add_password(id, value):
     await db.connect()
     await db.execute(f'''UPDATE public.resume_db1 SET password = '{value}' WHERE id = {id};''')
+    await db.disconnect()
+
+
+async def clear_table(id):
+    await db.connect()
+    await db.execute(f'''UPDATE public.resume_db1
+    SET name_surname=0, phone_number=0, email=0, education=0, lang=0, lang_level=0, country=0, city=0, description=0,
+    profession=0, soft_skills=0, tech_skills=0, projects=0, how_long=0, job_description=0, past_work=0
+    WHERE id={id};''')
     await db.disconnect()
