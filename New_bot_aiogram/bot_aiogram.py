@@ -5,6 +5,8 @@ from aiogram import types, Dispatcher, Bot
 from aiogram.dispatcher import FSMContext
 from aiogram.utils import executor, callback_data
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+
+from Resumeaiogram.New_bot_aiogram import edit_answers
 from Resumeaiogram.app.database import db_executions
 from Resumeaiogram import config
 # from app.database import db_executions
@@ -19,8 +21,7 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 async def start(message: types.Message):
     await bot.send_message(message.chat.id, '👋Привіт!👋\n'  
                                             '😃Це бот для створення резюме, думаю тобі сподобається😃'.format(message.from_user.first_name), reply_markup=but_create)
-    await db_executions.add_id(message.chat.id)
-    await db_executions.add_id(message.chat.id)
+    #await db_executions.add_id(message.chat.id)
 
 
 @dp.message_handler(content_types=['text'])
@@ -33,7 +34,7 @@ async def name_surname(message: types.Message):
 
 @dp.message_handler(content_types=['text'], state=Steps.name_surname)
 async def name_surname2(message: types.Message):
-    await db_executions.add_name_surname(message.chat.id, message.text)
+    #await db_executions.add_name_surname(message.chat.id, message.text)
     print('name_surname {}'.format(message.text))
     await Steps.phone_number.set()
     await message.answer('Напишіть ваш номер телефону')
@@ -42,7 +43,6 @@ async def name_surname2(message: types.Message):
 @dp.message_handler(content_types=['text'], state=Steps.phone_number)
 async def phone_number(message: types.Message):
     phone_number = message.text
-    # asyncio.run(db_executions.add_name_surname(message.chat.id, message.text))
     print('phone_number {}'.format(phone_number))
     await Steps.get_email.set()
     await message.answer('Напишіть ваш email')
@@ -160,7 +160,6 @@ async def get_job_description(message: types.Message):
 async def get_how_long(message: types.Message):
     get_how_long = message.text
     print('get_how_long {}'.format(get_how_long))
-    await db_executions.search_user(message.chat.id)
     result = await db_executions.select_all()
     right_user = ''
     for data_tuple in result:
@@ -186,6 +185,56 @@ async def get_how_long(message: types.Message):
                          "Чи хочете відредагувати свої дані?'\n", reply_markup=changes)
 
 
+@dp.callback_query_handler(state='*')
+async def bot_drop_wheel(callback: types.callback_query):
+    if callback == 'name_surname':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_name_surname()
+    elif callback == 'phone':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_phone_number()
+    if callback == 'email':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_email()
+    elif callback == 'education':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_education()
+    if callback == 'soft_skills':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_soft_skills()
+    elif callback == 'tech_skills':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_tech_skills()
+    if callback == 'projects':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_projects()
+    elif callback == 'lang':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_lang()
+    if callback == 'lang_level':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_lang_level()
+    elif callback == 'country':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_country()
+    if callback == 'city':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_city()
+    elif callback == 'profession':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_profession()
+    if callback == 'description':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_description()
+    elif callback == 'past_work':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_past_work()
+    if callback == 'job_description':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_job_description()
+    elif callback == 'how_long':
+        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+        await edit_answers.edit_how_long()
 
 
 

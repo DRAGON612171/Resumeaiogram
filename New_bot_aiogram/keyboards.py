@@ -22,54 +22,54 @@ end_keyboard = InlineKeyboardMarkup(
 )
 
 changes = InlineKeyboardMarkup(
-    inline_keyboard= [
+    inline_keyboard=[
             [
-             InlineKeyboardButton(text='😃Імя та прізвище😃', callback_data='1' )
+             InlineKeyboardButton(text='😃Імя та прізвище😃', callback_data='name_surname' )
             ],
             [
-                InlineKeyboardButton(text='☎Номер телефону☎️', callback_data='2')
+                InlineKeyboardButton(text='☎Номер телефону☎️', callback_data='phone')
             ],
             [
-                InlineKeyboardButton(text='📧Email📧', callback_data='3')
+                InlineKeyboardButton(text='📧Email📧', callback_data='email')
             ],
             [
-                InlineKeyboardButton(text='🧐Освіта🧐', callback_data='4')
+                InlineKeyboardButton(text='🧐Освіта🧐', callback_data='education')
             ],
             [
-                 InlineKeyboardButton(text='😄Soft Навички😄', callback_data='5' )
+                 InlineKeyboardButton(text='😄Soft Навички😄', callback_data='soft_skills' )
             ],
             [
-                InlineKeyboardButton(text='😄Tech Навички😄', callback_data='14')
+                InlineKeyboardButton(text='😄Tech Навички😄', callback_data='tech_skills')
             ],
             [
-                InlineKeyboardButton(text='😲Проекти😲', callback_data='6' )
+                InlineKeyboardButton(text='😲Проекти😲', callback_data='projects' )
             ],
             [
-                InlineKeyboardButton(text='✌Мови✌️', callback_data='7')
+                InlineKeyboardButton(text='✌Мови✌️', callback_data='lang')
             ],
             [
-                InlineKeyboardButton(text='🗣Рівень мови🗣', callback_data='8' )
+                InlineKeyboardButton(text='🗣Рівень мови🗣', callback_data='lang_level' )
             ],
             [
-                InlineKeyboardButton(text="👍Країна👍", callback_data='9')
+                InlineKeyboardButton(text="👍Країна👍", callback_data='country')
             ],
             [
-                InlineKeyboardButton(text="🤟Місто🤟", callback_data='10')
+                InlineKeyboardButton(text="🤟Місто🤟", callback_data='city')
             ],
             [
-                InlineKeyboardButton(text="👨‍🎓Професія👨‍🎓", callback_data='11')
+                InlineKeyboardButton(text="👨‍🎓Професія👨‍🎓", callback_data='profession')
             ],
             [
-                InlineKeyboardButton(text="😱Очікування😱", callback_data='12')
+                InlineKeyboardButton(text="😱Очікування😱", callback_data='description')
             ],
             [
-                InlineKeyboardButton(text="🤯Минула посада🤯", callback_data='13'),
+                InlineKeyboardButton(text="🤯Минула посада🤯", callback_data='past_work'),
             ],
             [
-                InlineKeyboardButton(text="😱Ваша робота на минулій посаді😱", callback_data='17'),
+                InlineKeyboardButton(text="😱Що ви робили на минулій посаді😱", callback_data='job_description'),
             ],
             [
-                InlineKeyboardButton(text="🤯Термін вашої минулої роботи🤯", callback_data='18'),
+                InlineKeyboardButton(text="🤯Термін вашої минулої роботи🤯", callback_data='how_long'),
             ]
 
 

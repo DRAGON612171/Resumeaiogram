@@ -1,4 +1,4 @@
-from app import app
+from Resumeaiogram.app import app
 from flask import render_template, redirect, url_for
 from .forms import LoginForm
 from .database.tunels_connection import readTable
