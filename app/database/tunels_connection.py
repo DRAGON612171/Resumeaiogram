@@ -1,4 +1,4 @@
-from Resumeaiogram import config
+import config
 import sshtunnel
 import psycopg2
 

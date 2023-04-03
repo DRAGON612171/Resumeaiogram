@@ -21,15 +21,6 @@ async def select_all():
     return right_values
 
 
-async def search_user(id):
-    await db.connect()
-    result = await db.execute(f'''SELECT id, name_surname, phone_number, email, education, lang, lang_level, country, city,
-    password, description, profession, soft_skills, tech_skills, projects, how_long, job_description, past_work
-    FROM public.resume_db1 WHERE id={id};''')
-    await db.disconnect()
-    return result
-
-
 async def add_id(id):
     await db.connect()
     await db.execute(f'''INSERT INTO public.resume_db1(id) VALUES ('{id}');''')
