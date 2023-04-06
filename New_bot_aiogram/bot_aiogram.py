@@ -99,6 +99,9 @@ async def get_lang(message: types.Message):
     await Steps.get_lang_level.set()
     await message.answer('Напишіть рівень знання цiєї мови')
 
+#UPDATE public.qwert
+#SET name2=array_append(name2, 'Nazar')
+#WHERE id = 1;
 
 @dp.message_handler(state=Steps.get_lang_level)
 async def get_lang_level(message: types.Message):
