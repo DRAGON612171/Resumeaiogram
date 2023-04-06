@@ -1,8 +1,10 @@
-from Resumeaiogram.app.database.db_connection import Database
+import asyncpg
+from Resumeaiogram import config
+from Resumeaiogram.database.db_connection import Database
+
 # from app.database.db_connection import Database
 
 db = Database()
-
 
 #Кожну функцію треба робити через asyncio.run(select_all())
 async def select_all():

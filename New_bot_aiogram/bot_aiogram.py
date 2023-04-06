@@ -1,14 +1,14 @@
 # import asyncio
-import asyncio
 
 from aiogram import types, Dispatcher, Bot
-from aiogram.dispatcher import FSMContext
-from aiogram.utils import executor, callback_data
+from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from Resumeaiogram.New_bot_aiogram import edit_answers
-from Resumeaiogram.app.database import db_executions
+import edit_answers
+#from app.database import db_executions
+
 from Resumeaiogram import config
+from Resumeaiogram.database import db_executions
 # from app.database import db_executions
 from steps import *
 from keyboards import *
@@ -94,10 +94,10 @@ async def get_soft_skills(message: types.Message):
 
 @dp.message_handler(state=Steps.get_lang)
 async def get_lang(message: types.Message):
-    get_lang = message.text
+    get_lang = '1,2,3'
     print('lang {}'.format(get_lang))
     await Steps.get_lang_level.set()
-    await message.answer('Напишіть рівень знання цих мов')
+    await message.answer('Напишіть рівень знання цiєї мови')
 
 
 @dp.message_handler(state=Steps.get_lang_level)
