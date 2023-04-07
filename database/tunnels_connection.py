@@ -18,9 +18,7 @@ def readTable():
                 host='127.0.0.1', port=tunnel.local_bind_port,
                 database=config.Database)
             cur = connection.cursor()
-            cur.execute("""SELECT *
-FROM public.resume_db1
-WHERE id = 1""")
+            cur.execute("""SELECT * FROM public.resume_db1 WHERE id = 1""")
             result = cur.fetchall()
             print(result)
             connection.close()
@@ -28,5 +26,3 @@ WHERE id = 1""")
             return result
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
-
-readTable()
