@@ -1,6 +1,6 @@
 # import asyncio
 import asyncio
-
+# from cycyle_for_function import keyboard_skip
 from aiogram import types, Dispatcher, Bot
 from aiogram.dispatcher import FSMContext
 from aiogram.utils import executor, callback_data
@@ -13,6 +13,12 @@ from keyboards import *
 
 bot = Bot(token=config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
+
+
+async def skip_three_functions(message: types.Message, state: FSMContext):
+    await get_work_experience(message, state)
+    await get_job_description(message, state)
+    await get_how_long(message, state)
 
 
 @dp.message_handler(commands=['start'])
@@ -137,15 +143,41 @@ async def get_description(message: types.Message):
     get_descreption = message.text
     print('descreption {}'.format(get_descreption))
     await Steps.get_work_experience.set()
-    await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)')
+    await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)', reply_markup=)
 
 
 @dp.message_handler(state=Steps.get_work_experience)
 async def get_work_experience(message: types.Message):
-    get_work_experience = message.text
-    print('work_experience {}'.format(get_work_experience))
-    await Steps.get_job_description.set()
-    await message.answer('Опишіть, що робили на цій роботі')
+    if message.text == "Немає досвіду роботи":
+        await db_executions.search_user(message.chat.id)
+        result = await db_executions.select_all()
+        right_user = ''
+        for data_tuple in result:
+            if int(message.chat.id) in data_tuple:
+                right_user = data_tuple
+        await message.answer("😎Ваше резюме готове, перевірте свої дані:😎\n"
+                             f"Ім'я та прізивще: {right_user[1]}\n"
+                             f"Номер телефону: {right_user[2]}\n"
+                             f"Електронна пошта: {right_user[3]}\n"
+                             f"Освіта: {right_user[4]}\n"
+                             f"Tech Навички: {right_user[-5]}\n"
+                             f"Soft Навички: {right_user[-6]}\n"
+                             f"Посилання на ваші проекти: {right_user[-4]}\n"
+                             f"Мови: {right_user[5]}\n"
+                             f"Рівень знання цих мов:{right_user[6]}\n"
+                             f"Ваша країна: {right_user[7]}\n"
+                             f"Ваше місто: {right_user[8]}\n"
+                             f"Посада на яку претендуєте: {right_user[11]}\n"
+                             f"Ваші очікування від роботи: {right_user[10]}\n"
+                             f"Ваш минулий досвід роботи(минула посада): {right_user[-1]}\n"
+                             f"Що ви робили на цій посаді: {right_user[-2]}\n"
+                             f"Скільки часу ви займали цю посаду: {right_user[-3]}\n"
+                             "Чи хочете відредагувати свої дані?'\n", reply_markup=changes)
+    else:
+        get_work_experience = message.text
+        print('work_experience {}'.format(get_work_experience))
+        await Steps.get_job_description.set()
+        await message.answer('Опишіть, що робили на цій роботі')
 
 
 @dp.message_handler(state=Steps.get_job_description)

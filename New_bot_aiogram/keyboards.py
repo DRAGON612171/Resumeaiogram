@@ -1,7 +1,5 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 
-
-
 but_create = ReplyKeyboardMarkup(
     keyboard=[
         [
