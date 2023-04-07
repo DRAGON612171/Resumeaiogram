@@ -1,6 +1,6 @@
 from aiogram import types
-from Resumeaiogram.New_bot_aiogram.bot_aiogram import dp, bot
-from Resumeaiogram.app.database import db_executions
+from bot_aiogram import dp, bot
+from Resumeaiogram.database import db_executions
 
 
 @dp.message_handler(content_types=['text'])

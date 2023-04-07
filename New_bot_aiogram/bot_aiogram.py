@@ -1,11 +1,10 @@
 # import asyncio
-import asyncio
 
 from aiogram import types, Dispatcher, Bot
-from aiogram.dispatcher import FSMContext
-from aiogram.utils import executor, callback_data
+from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
+<<<<<<< HEAD
 import config
 from New_bot_aiogram import edit_answers
 from app.database import db_executions
@@ -14,6 +13,13 @@ from app.database import db_executions
 # from Resumeaiogram.New_bot_aiogram import edit_answers
 # from Resumeaiogram.app.database import db_executions
 # from Resumeaiogram import config
+=======
+import edit_answers
+#from app.database import db_executions
+
+from Resumeaiogram import config
+from Resumeaiogram.database import db_executions
+>>>>>>> d6c0e28dd21975823e54e896c433fd5eefcce386
 # from app.database import db_executions
 from steps import *
 from keyboards import *
@@ -98,6 +104,7 @@ async def get_soft_skills(message: types.Message):
 
 
 @dp.message_handler(state=Steps.get_lang)
+<<<<<<< HEAD
 async def get_lang (message: types.Message):
     if message.text.lower() == 'stop':
         await Steps.get_country.set()
@@ -108,6 +115,17 @@ async def get_lang (message: types.Message):
         print('lang{}'.format(get_lang))
         await Steps.get_lang_level.set()
         await message.answer('Напишіть рівень мови', reply_markup=lists)
+=======
+async def get_lang(message: types.Message):
+    get_lang = '1,2,3'
+    print('lang {}'.format(get_lang))
+    await Steps.get_lang_level.set()
+    await message.answer('Напишіть рівень знання цiєї мови')
+
+#UPDATE public.qwert
+#SET name2=array_append(name2, 'Nazar')
+#WHERE id = 1;
+>>>>>>> d6c0e28dd21975823e54e896c433fd5eefcce386
 
 @dp.message_handler(state=Steps.get_lang_level)
 async def get_lang_level (message: types.Message):
