@@ -4,22 +4,16 @@ from aiogram import types, Dispatcher, Bot
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-<<<<<<< HEAD
-import config
-from New_bot_aiogram import edit_answers
-from app.database import db_executions
-
-#
 # from Resumeaiogram.New_bot_aiogram import edit_answers
 # from Resumeaiogram.app.database import db_executions
 # from Resumeaiogram import config
-=======
+
 import edit_answers
 #from app.database import db_executions
 
 from Resumeaiogram import config
 from Resumeaiogram.database import db_executions
->>>>>>> d6c0e28dd21975823e54e896c433fd5eefcce386
+
 # from app.database import db_executions
 from steps import *
 from keyboards import *
@@ -69,14 +63,10 @@ async def get_email(message: types.Message):
 
 @dp.message_handler(state=Steps.get_education)
 async def get_education(message: types.Message):
-    education_list = []
-    if message.text.lower() == 'stop':
-        await Steps.get_tech_skills.set()
-        await message.answer('Напишіть ваші Tech Skills')
-    else:
-        education_list.append(message.text)
-        await message.answer('Напишіть рівень вашої освіти', reply_markup=lists)
-        print(education_list)
+    get_education = message.text
+    await message.answer('Напишіть ваші Tech Skills')
+    await Steps.get_tech_skills.set()
+    print(get_education)
 
 
 @dp.message_handler(state=Steps.get_tech_skills)
@@ -104,8 +94,7 @@ async def get_soft_skills(message: types.Message):
 
 
 @dp.message_handler(state=Steps.get_lang)
-<<<<<<< HEAD
-async def get_lang (message: types.Message):
+async def get_lang(message: types.Message):
     if message.text.lower() == 'stop':
         await Steps.get_country.set()
         await message.answer('Напишіть з якої ви країни')
@@ -115,20 +104,14 @@ async def get_lang (message: types.Message):
         print('lang{}'.format(get_lang))
         await Steps.get_lang_level.set()
         await message.answer('Напишіть рівень мови', reply_markup=lists)
-=======
-async def get_lang(message: types.Message):
-    get_lang = '1,2,3'
-    print('lang {}'.format(get_lang))
-    await Steps.get_lang_level.set()
-    await message.answer('Напишіть рівень знання цiєї мови')
 
 #UPDATE public.qwert
 #SET name2=array_append(name2, 'Nazar')
 #WHERE id = 1;
->>>>>>> d6c0e28dd21975823e54e896c433fd5eefcce386
+
 
 @dp.message_handler(state=Steps.get_lang_level)
-async def get_lang_level (message: types.Message):
+async def get_lang_level(message: types.Message):
     if message.text.lower() == 'stop':
         await Steps.get_country.set()
         await message.answer('Напишіть з якої ви країни')
@@ -138,6 +121,7 @@ async def get_lang_level (message: types.Message):
         print('lang_level {}'.format(get_lang_level))
         await Steps.get_lang.set()
         await message.answer('Напишіть яку ви знаєте мову')
+
 
 @dp.message_handler(state=Steps.get_country)
 async def get_country(message: types.Message):
@@ -183,17 +167,19 @@ async def get_work_experience(message: types.Message):
         await Steps.get_job_description.set()
         await message.answer('Опишіть, що робили на цій роботі', reply_markup=lists)
 
+
 @dp.message_handler(state=Steps.get_job_description)
 async def get_job_description(message: types.Message):
     if message.text.lower() == 'stop':
         await Steps.end_message.set()
-        await message.answer('😎Ваше резюме готове, перевірте свої дані:😎')
+        await message.answer('😎Ваше резюме майже готове, перевірте свої дані:😎')
     else:
         get_job_description = []
         get_job_description.append(message.text)
         print('get_job_description {}'.format(get_job_description))
         await Steps.get_how_long.set()
         await message.answer('Скільки часу ви займали цю посаду?', reply_markup=lists)
+
 
 @dp.message_handler(state=Steps.get_how_long)
 async def get_how_long(message: types.Message):
@@ -231,11 +217,16 @@ async def end_message(message: types.Message):
                          f"Ваш минулий досвід роботи(минула посада): {right_user[-1]}\n"
                          f"Що ви робили на цій посаді: {right_user[-2]}\n"
                          f"Скільки часу ви займали цю посаду: {right_user[-3]}\n"
-                         "Чи хочете відредагувати свої дані?'\n", reply_markup=changes)
+                         "Чи хочете відредагувати свої дані?'\n", reply_markup=end_keyboard)
 
 
 @dp.callback_query_handler(state='*')
-async def bot_drop_wheel(callback: types.callback_query):
+async def bot_changes(callback: types.callback_query):
+    if callback == '15':
+        await bot.send_message(callback.from_user.id, "Що бажаєте змінити?", reply_markup=changes)
+    elif callback == '16':
+        await bot.send_message(callback.from_user.id, "Все готово, можете зайти до сайту і отримати своє резюме")
+        await bot.send_message(callback.from_user.id, "")
     if callback == 'name_surname':
         await bot.send_message(callback.from_user.id, "Введіть нове значення:")
         await edit_answers.edit_name_surname()

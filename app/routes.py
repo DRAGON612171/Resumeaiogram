@@ -1,7 +1,9 @@
+import asyncio
+
 from Resumeaiogram.app import app
 from flask import render_template, redirect, url_for
 from .forms import LoginForm
-from Resumeaiogram.database.tunnels_connection import readTable
+from Resumeaiogram.database.db_executions import select_all
 
 right_tuple = ''
 
@@ -11,8 +13,7 @@ right_tuple = ''
 def login():
     global right_tuple
     user = LoginForm()
-    #result = asyncio.run(select_all())
-    result = readTable()
+    result = asyncio.run(select_all())
     if user.validate_on_submit():
         for data_tuple in result:
             if int(user.user_id.data) in data_tuple and data_tuple[9] == str(user.password.data):
