@@ -6,9 +6,14 @@ from aiogram.dispatcher import FSMContext
 from aiogram.utils import executor, callback_data
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from Resumeaiogram.New_bot_aiogram import edit_answers
-from Resumeaiogram.app.database import db_executions
-from Resumeaiogram import config
+import config
+from New_bot_aiogram import edit_answers
+from app.database import db_executions
+
+#
+# from Resumeaiogram.New_bot_aiogram import edit_answers
+# from Resumeaiogram.app.database import db_executions
+# from Resumeaiogram import config
 # from app.database import db_executions
 from steps import *
 from keyboards import *
@@ -89,24 +94,32 @@ async def get_soft_skills(message: types.Message):
     get_projects = message.text
     print('projects {}'.format(get_projects))
     await Steps.get_lang.set()
-    await message.answer('Напишіть з які ви знаєте мови')
+    await message.answer('Напишіть яку ви знаєте мову')
 
 
 @dp.message_handler(state=Steps.get_lang)
-async def get_lang(message: types.Message):
-    get_lang = message.text
-    print('lang {}'.format(get_lang))
-    await Steps.get_lang_level.set()
-    await message.answer('Напишіть рівень знання цих мов')
-
+async def get_lang (message: types.Message):
+    if message.text.lower() == 'stop':
+        await Steps.get_country.set()
+        await message.answer('Напишіть з якої ви країни')
+    else:
+        get_lang = []
+        get_lang.append(message.text)
+        print('lang{}'.format(get_lang))
+        await Steps.get_lang_level.set()
+        await message.answer('Напишіть рівень мови', reply_markup=lists)
 
 @dp.message_handler(state=Steps.get_lang_level)
-async def get_lang_level(message: types.Message):
-    get_lang_level = message.text
-    print('lang_level {}'.format(get_lang_level))
-    await Steps.get_country.set()
-    await message.answer('Напишіть з якої ви країни')
-
+async def get_lang_level (message: types.Message):
+    if message.text.lower() == 'stop':
+        await Steps.get_country.set()
+        await message.answer('Напишіть з якої ви країни')
+    else:
+        get_lang_level = []
+        get_lang_level.append(message.text)
+        print('lang_level {}'.format(get_lang_level))
+        await Steps.get_lang.set()
+        await message.answer('Напишіть яку ви знаєте мову')
 
 @dp.message_handler(state=Steps.get_country)
 async def get_country(message: types.Message):
@@ -142,31 +155,49 @@ async def get_description(message: types.Message):
 
 @dp.message_handler(state=Steps.get_work_experience)
 async def get_work_experience(message: types.Message):
-    get_work_experience = message.text
-    print('work_experience {}'.format(get_work_experience))
-    await Steps.get_job_description.set()
-    await message.answer('Опишіть, що робили на цій роботі')
-
+    if message.text.lower() == 'stop':
+        await Steps.end_message.set()
+        await message.answer('😎Ваше резюме готове, перевірте свої дані:😎')
+    else:
+        get_work_experience = []
+        get_work_experience.append(message.text)
+        print('get_work_experience {}'.format(get_work_experience))
+        await Steps.get_job_description.set()
+        await message.answer('Опишіть, що робили на цій роботі', reply_markup=lists)
 
 @dp.message_handler(state=Steps.get_job_description)
 async def get_job_description(message: types.Message):
-    get_job_description = message.text
-    print('get_job_description {}'.format(get_job_description))
-    await Steps.get_how_long.set()
-    await message.answer('Скільки часу ви займали цю посаду?')
-
+    if message.text.lower() == 'stop':
+        await Steps.end_message.set()
+        await message.answer('😎Ваше резюме готове, перевірте свої дані:😎')
+    else:
+        get_job_description = []
+        get_job_description.append(message.text)
+        print('get_job_description {}'.format(get_job_description))
+        await Steps.get_how_long.set()
+        await message.answer('Скільки часу ви займали цю посаду?', reply_markup=lists)
 
 @dp.message_handler(state=Steps.get_how_long)
 async def get_how_long(message: types.Message):
-    get_how_long = message.text
-    print('get_how_long {}'.format(get_how_long))
+    if message.text.lower() == 'stop':
+        await Steps.end_message.set()
+        await message.answer('😎Ваше резюме готове, перевірте свої дані:😎')
+    else:
+        get_how_long = []
+        get_how_long.append(message.text)
+        print('get_how_long {}'.format(get_how_long))
+        await Steps.get_work_experience.set()
+        await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)', reply_markup=lists)
+
+
+@dp.message_handler(state=Steps.end_message)
+async def end_message(message: types.Message):
     result = await db_executions.select_all()
     right_user = ''
     for data_tuple in result:
         if int(message.chat.id) in data_tuple:
             right_user = data_tuple
-    await message.answer("😎Ваше резюме готове, перевірте свої дані:😎\n"
-                         f"Ім'я та прізивще: {right_user[1]}\n"
+    await message.answer(f"Ім'я та прізивще: {right_user[1]}\n"
                          f"Номер телефону: {right_user[2]}\n"
                          f"Електронна пошта: {right_user[3]}\n"
                          f"Освіта: {right_user[4]}\n"
