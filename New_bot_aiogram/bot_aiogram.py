@@ -1,28 +1,19 @@
-# import asyncio
-
 import asyncio
-# from cycyle_for_function import keyboard_skip
+import edit_answers
+
 from aiogram import types, Dispatcher, Bot
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-
-import edit_answers
-#from app.database import db_executions
-
 from Resumeaiogram import config
 from Resumeaiogram.database import db_executions
+
+from cycyle_for_function import but_skip
 # from app.database import db_executions
 from steps import *
 from keyboards import *
 
 bot = Bot(token=config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
-
-
-async def skip_three_functions(message: types.Message, state: FSMContext):
-    await get_work_experience(message, state)
-    await get_job_description(message, state)
-    await get_how_long(message, state)
 
 
 @dp.message_handler(commands=['start'])
@@ -148,7 +139,7 @@ async def get_description(message: types.Message):
     get_descreption = message.text
     print('descreption {}'.format(get_descreption))
     await Steps.get_work_experience.set()
-    await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)', reply_markup=)
+    await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)', reply_markup=but_skip)
 
 
 @dp.message_handler(state=Steps.get_work_experience)

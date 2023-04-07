@@ -1,6 +1,6 @@
 # from aiogram import types, Dispatcher, Bot
 # from steps import *
-# from keyboards import *
+from keyboards import *
 # from aiogram.contrib.fsm_storage.memory import MemoryStorage
 # from Resumeaiogram import config
 # from aiogram.utils import executor, callback_data
@@ -39,28 +39,38 @@
 #         message.answer('Напишіть з якої ви країни')
 #
 #
-async def skip_three_functions(message: types.Message, state: FSMContext):
-    await get_work_experience(message, state)
-    await get_job_description(message, state)
-    await get_how_long(message, state)
+# async def skip_three_functions(message: types.Message, state: FSMContext):
+#     await get_work_experience(message, state)
+#     await get_job_description(message, state)
+#     await get_how_long(message, state)
+
+
+but_skip = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+          KeyboardButton(text='Немає досвіду роботи')
+        ]
+    ],
+    resize_keyboard=True
+)
 
 # создаем кнопку "Skip 3 functions"
-skip_button = KeyboardButton(text="Немає досвіду роботи")
-
-# создаем клавиатуру с кнопкой "Skip 3 functions"
-keyboard_skip = ReplyKeyboardMarkup(resize_keyboard=True)
-keyboard_skip.add(skip_button)
+# skip_button = KeyboardButton(text="Немає досвіду роботи")
+#
+# # создаем клавиатуру с кнопкой "Skip 3 functions"
+# keyboard_skip = ReplyKeyboardMarkup(resize_keyboard=True)
+# keyboard_skip.add(skip_button)
 
 # отправляем сообщение с клавиатурой
 # await message.answer("Нажмите кнопку, чтобы пропустить три функции", reply_markup=keyboard)
 
 # задаем обработчик нажатия на кнопку
-dp.register_message_handler(skip_three_functions, lambda message: message.text == "Немає досвіду роботи")
-#
-if message.text == '📄Створити резюме📄':
-    reply_markup1 = ReplyKeyboardMarkup(resize_keyboard=True)
-    await message.answer('Напишіть ваше ім’я і прізвище', reply_markup=reply_markup1)
-    await Steps.name_surname.set()
+# dp.register_message_handler(skip_three_functions, lambda message: message.text == "Немає досвіду роботи")
+# #
+# if message.text == '📄Створити резюме📄':
+#     reply_markup1 = ReplyKeyboardMarkup(resize_keyboard=True)
+#     await message.answer('Напишіть ваше ім’я і прізвище', reply_markup=reply_markup1)
+#     await Steps.name_surname.set()
 #
 #
 #
