@@ -1,4 +1,6 @@
 # import asyncio
+import random
+import string
 
 from aiogram import types, Dispatcher, Bot
 from aiogram.utils import executor
@@ -24,9 +26,9 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
+    await db_executions.add_id(message.chat.id)
     await bot.send_message(message.chat.id, '👋Привіт!👋\n'  
                                             '😃Це бот для створення резюме, думаю тобі сподобається😃'.format(message.from_user.first_name), reply_markup=but_create)
-    #await db_executions.add_id(message.chat.id)
 
 
 @dp.message_handler(content_types=['text'])
@@ -39,159 +41,199 @@ async def name_surname(message: types.Message):
 
 @dp.message_handler(content_types=['text'], state=Steps.name_surname)
 async def name_surname2(message: types.Message):
-    #await db_executions.add_name_surname(message.chat.id, message.text)
-    print('name_surname {}'.format(message.text))
-    await Steps.phone_number.set()
-    await message.answer('Напишіть ваш номер телефону')
+    try:
+        await db_executions.add_name_surname(message.chat.id, message.text)
+        print('name_surname {}'.format(message.text))
+        await Steps.phone_number.set()
+        await message.answer('Напишіть ваш номер телефону')
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(content_types=['text'], state=Steps.phone_number)
 async def phone_number(message: types.Message):
-    phone_number = message.text
-    print('phone_number {}'.format(phone_number))
-    await Steps.get_email.set()
-    await message.answer('Напишіть ваш email')
+    try:
+        await db_executions.add_phone_number(message.chat.id, message.text)
+        print('phone_number {}'.format(phone_number))
+        await Steps.get_email.set()
+        await message.answer('Напишіть ваш email')
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_email)
 async def get_email(message: types.Message):
-    get_email = message.text
-    print('email {}'.format(get_email))
-    await Steps.get_education.set()
-    await message.answer('Напишіть рівень вашої освіти')
+    try:
+        await db_executions.add_email(message.chat.id, message.text)
+        print('email {}'.format(get_email))
+        await Steps.get_education.set()
+        await message.answer('Напишіть рівень вашої освіти')
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_education)
 async def get_education(message: types.Message):
-    get_education = message.text
-    await message.answer('Напишіть ваші Tech Skills')
-    await Steps.get_tech_skills.set()
-    print(get_education)
+    try:
+        await db_executions.add_education(message.chat.id, message.text)
+        await message.answer('Напишіть ваші Tech Skills')
+        await Steps.get_tech_skills.set()
+        print(get_education)
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_tech_skills)
 async def get_tech_skills(message: types.Message):
-    get_tech_skills = message.text
-    print('tech skills {}'.format(get_tech_skills))
-    await Steps.get_soft_skills.set()
-    await message.answer('Напишіть ваші Soft Skills')
+    try:
+        await db_executions.add_tech_skills(message.chat.id, message.text)
+        print('tech skills {}'.format(get_tech_skills))
+        await Steps.get_soft_skills.set()
+        await message.answer('Напишіть ваші Soft Skills')
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_soft_skills)
-async def get_soft_skills (message: types.Message()):
-    get_soft_skills = message.text
-    print('soft skills {}'.format(get_soft_skills))
-    await Steps.get_projects.set()
-    await message.answer('Додайте посилання на ваші проекти')
+async def get_soft_skills(message: types.Message()):
+    try:
+        await db_executions.add_soft_skills(message.chat.id, message.text)
+        print('soft skills {}'.format(get_soft_skills))
+        await Steps.get_projects.set()
+        await message.answer('Додайте посилання на ваші проекти')
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_projects)
-async def get_soft_skills(message: types.Message):
-    get_projects = message.text
-    print('projects {}'.format(get_projects))
-    await Steps.get_lang.set()
-    await message.answer('Напишіть яку ви знаєте мову')
+async def get_projects(message: types.Message):
+    try:
+        await db_executions.add_projects(message.chat.id, message.text)
+        get_projects = message.text
+        print('projects {}'.format(get_projects))
+        await Steps.get_lang.set()
+        await message.answer('Напишіть яку ви знаєте мову')
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_lang)
 async def get_lang(message: types.Message):
-    if message.text.lower() == 'stop':
-        await Steps.get_country.set()
-        await message.answer('Напишіть з якої ви країни')
-    else:
-        get_lang = []
-        get_lang.append(message.text)
-        print('lang{}'.format(get_lang))
-        await Steps.get_lang_level.set()
-        await message.answer('Напишіть рівень мови', reply_markup=lists)
-
-#UPDATE public.qwert
-#SET name2=array_append(name2, 'Nazar')
-#WHERE id = 1;
+    try:
+        if message.text.lower() == 'stop':
+            await Steps.get_country.set()
+            await message.answer('Напишіть з якої ви країни')
+        else:
+            await db_executions.add_lang(message.chat.id, message.text)
+            print('lang{}'.format(get_lang))
+            await Steps.get_lang_level.set()
+            await message.answer('Напишіть рівень мови', reply_markup=lists)
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_lang_level)
 async def get_lang_level(message: types.Message):
-    if message.text.lower() == 'stop':
-        await Steps.get_country.set()
-        await message.answer('Напишіть з якої ви країни')
-    else:
-        get_lang_level = []
-        get_lang_level.append(message.text)
-        print('lang_level {}'.format(get_lang_level))
-        await Steps.get_lang.set()
-        await message.answer('Напишіть яку ви знаєте мову')
+    try:
+        if message.text.lower() == 'stop':
+            await Steps.get_country.set()
+            await message.answer('Напишіть з якої ви країни')
+        else:
+            await db_executions.add_lang_level(message.chat.id, message.text)
+            print('lang_level {}'.format(get_lang_level))
+            await Steps.get_lang.set()
+            await message.answer('Напишіть яку ви знаєте мову')
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_country)
 async def get_country(message: types.Message):
-    get_country = message.text
-    print('country {}'.format(get_country))
-    await Steps.get_city.set()
-    await message.answer('Напишіть з якого ви міста')
+    try:
+        await db_executions.add_country(message.chat.id, message.text)
+        print('country {}'.format(get_country))
+        await Steps.get_city.set()
+        await message.answer('Напишіть з якого ви міста')
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_city)
 async def get_city(message: types.Message):
-    get_city = message.text
-    print('city {}'.format(get_city))
-    await Steps.get_profession.set()
-    await message.answer('Напишіть на яку посаду претендуєте')
+    try:
+        await db_executions.add_city(message.chat.id, message.text)
+        print('city {}'.format(get_city))
+        await Steps.get_profession.set()
+        await message.answer('Напишіть на яку посаду претендуєте')
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_profession)
 async def get_profession(message: types.Message):
-    get_profession = message.text
-    print('profession {}'.format(get_profession))
-    await Steps.get_description.set()
-    await message.answer('Напишіть, що ви очікуєте від цієї посади(можете розповісти щось про себе')
+    try:
+        await db_executions.add_profession(message.chat.id, message.text)
+        print('profession {}'.format(get_profession))
+        await Steps.get_description.set()
+        await message.answer('Напишіть, що ви очікуєте від цієї посади(можете розповісти щось про себе')
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_description)
 async def get_description(message: types.Message):
-    get_descreption = message.text
-    print('descreption {}'.format(get_descreption))
-    await Steps.get_work_experience.set()
-    await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)')
+    try:
+        await db_executions.add_description(message.chat.id, message.text)
+        print('description {}'.format(get_description))
+        await Steps.get_work_experience.set()
+        await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)')
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_work_experience)
 async def get_work_experience(message: types.Message):
-    if message.text.lower() == 'stop':
-        await Steps.end_message.set()
-        await message.answer('😎Ваше резюме готове, перевірте свої дані:😎')
-    else:
-        get_work_experience = []
-        get_work_experience.append(message.text)
-        print('get_work_experience {}'.format(get_work_experience))
-        await Steps.get_job_description.set()
-        await message.answer('Опишіть, що робили на цій роботі', reply_markup=lists)
+    try:
+        if message.text.lower() == 'stop':
+            await Steps.end_message.set()
+            await message.answer('😎Ваше резюме готове, перевірте свої дані:😎')
+        else:
+            await db_executions.add_past_work(message.chat.id, message.text)
+            print('get_work_experience {}'.format(get_work_experience))
+            await Steps.get_job_description.set()
+            await message.answer('Опишіть, що робили на цій роботі', reply_markup=lists)
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_job_description)
 async def get_job_description(message: types.Message):
-    if message.text.lower() == 'stop':
-        await Steps.end_message.set()
-        await message.answer('😎Ваше резюме майже готове, перевірте свої дані:😎')
-    else:
-        get_job_description = []
-        get_job_description.append(message.text)
-        print('get_job_description {}'.format(get_job_description))
-        await Steps.get_how_long.set()
-        await message.answer('Скільки часу ви займали цю посаду?', reply_markup=lists)
+    try:
+        if message.text.lower() == 'stop':
+            await Steps.end_message.set()
+            await message.answer('😎Ваше резюме майже готове, перевірте свої дані:😎')
+        else:
+            await db_executions.add_job_description(message.chat.id, message.text)
+            print('get_job_description {}'.format(get_job_description))
+            await Steps.get_how_long.set()
+            await message.answer('Скільки часу ви займали цю посаду?', reply_markup=lists)
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_how_long)
 async def get_how_long(message: types.Message):
-    if message.text.lower() == 'stop':
-        await Steps.end_message.set()
-        await message.answer('😎Ваше резюме готове, перевірте свої дані:😎')
-    else:
-        get_how_long = []
-        get_how_long.append(message.text)
-        print('get_how_long {}'.format(get_how_long))
-        await Steps.get_work_experience.set()
-        await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)', reply_markup=lists)
+    try:
+        if message.text.lower() == 'stop':
+            await Steps.end_message.set()
+            await message.answer('😎Ваше резюме готове, перевірте свої дані:😎')
+        else:
+            await db_executions.add_how_long(message.chat.id, message.text)
+            print('get_how_long {}'.format(get_how_long))
+            await Steps.get_work_experience.set()
+            await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)', reply_markup=lists)
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.end_message)
@@ -225,7 +267,9 @@ async def bot_changes(callback: types.callback_query):
     if callback == '15':
         await bot.send_message(callback.from_user.id, "Що бажаєте змінити?", reply_markup=changes)
     elif callback == '16':
-        await bot.send_message(callback.from_user.id, "Все готово, можете зайти до сайту і отримати своє резюме")
+        await db_executions.add_password(callback.chat.id)
+        await bot.send_message(callback.from_user.id, "Все готово, можете зайти до сайту і отримати своє резюме:")
+        #Додати посилання на сайт
         await bot.send_message(callback.from_user.id, "")
     if callback == 'name_surname':
         await bot.send_message(callback.from_user.id, "Введіть нове значення:")
@@ -275,15 +319,6 @@ async def bot_changes(callback: types.callback_query):
     elif callback == 'how_long':
         await bot.send_message(callback.from_user.id, "Введіть нове значення:")
         await edit_answers.edit_how_long()
-
-
-
-
-
-
-
-
-
 
 if __name__ == '__main__':
     executor.start_polling(dp)

@@ -1,3 +1,6 @@
+import random
+import string
+
 import asyncpg
 from Resumeaiogram import config
 from Resumeaiogram.database.db_connection import Database
@@ -6,12 +9,12 @@ from Resumeaiogram.database.db_connection import Database
 
 db = Database()
 
-#Кожну функцію треба робити через asyncio.run(select_all())
+
 async def select_all():
     await db.connect()
 
     # Выполнение запроса на чтение
-    result = await db.fetch('SELECT * FROM resume_db')
+    result = await db.fetch('SELECT * FROM resume_db1')
 
     right_values = []
     for row in result:
@@ -31,7 +34,7 @@ async def add_id(id):
 
 async def add_name_surname(id, value):
     await db.connect()
-    await db.execute(f'''UPDATE public.resume_db1 SET name_surnme = '{value}' WHERE id = {id};''')
+    await db.execute(f'''UPDATE public.resume_db1 SET name_surname = '{value}' WHERE id = {id};''')
     await db.disconnect()
 
 
@@ -55,13 +58,13 @@ async def add_education(id, value):
 
 async def add_lang(id, value):
     await db.connect()
-    await db.execute(f'''UPDATE public.resume_db1 SET lang = '{value}' WHERE id = {id};''')
+    await db.execute(f'''UPDATE public.resume_db1 SET lang = array_append(lang, '{value}') WHERE id = {id};''')
     await db.disconnect()
 
 
 async def add_lang_level(id, value):
     await db.connect()
-    await db.execute(f'''UPDATE public.resume_db1 SET lang_level = '{value}' WHERE id = {id};''')
+    await db.execute(f'''UPDATE public.resume_db1 SET lang_level = array_append(lang_level,'{value}') WHERE id = {id};''')
     await db.disconnect()
 
 
@@ -109,25 +112,33 @@ async def add_projects(id, value):
 
 async def add_how_long(id, value):
     await db.connect()
-    await db.execute(f'''UPDATE public.resume_db1 SET how_long = '{value}' WHERE id = {id};''')
+    await db.execute(f'''UPDATE public.resume_db1 SET how_long = array_append(how_long,'{value}') WHERE id = {id};''')
     await db.disconnect()
 
 
 async def add_job_description(id, value):
     await db.connect()
-    await db.execute(f'''UPDATE public.resume_db1 SET job_description = '{value}' WHERE id = {id};''')
+    await db.execute(f'''UPDATE public.resume_db1 SET job_description = array_append(job_description,'{value}') WHERE id = {id};''')
     await db.disconnect()
 
 
 async def add_past_work(id, value):
     await db.connect()
-    await db.execute(f'''UPDATE public.resume_db1 SET past_work = '{value}' WHERE id = {id};''')
+    await db.execute(f'''UPDATE public.resume_db1 SET past_work = array_append(past_work,'{value}') WHERE id = {id};''')
     await db.disconnect()
 
 
-async def add_password(id, value):
+async def add_password(id):
     await db.connect()
-    await db.execute(f'''UPDATE public.resume_db1 SET password = '{value}' WHERE id = {id};''')
+    letters = string.ascii_letters
+    ''.join(random.choice(letters) for i in range(8))
+    await db.execute(f'''UPDATE public.resume_db1 SET password = '{letters}' WHERE id = {id};''')
+    await db.disconnect()
+
+
+async def clear_row(id, row_name):
+    await db.connect()
+    await db.execute(f'''UPDATE public.resume_db1 SET {row_name}=0 WHERE id={id};''')
     await db.disconnect()
 
 
