@@ -1,4 +1,3 @@
-# import asyncio
 import random
 import string
 
@@ -12,6 +11,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 import edit_answers
 #from app.database import db_executions
+from admins_notify import notify_admins
 
 from Resumeaiogram import config
 from Resumeaiogram.database import db_executions
@@ -22,6 +22,11 @@ from keyboards import *
 
 bot = Bot(token=config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
+
+
+@dp.message_handler(commands=['clear'])
+async def clear(message: types.Message):
+    await bot.send_message(message.chat.id, 'Ви впевнені, що хочете видалити всі данні?', reply_markup=confirm)
 
 
 @dp.message_handler(commands=['start'])
@@ -320,5 +325,9 @@ async def bot_changes(callback: types.callback_query):
         await bot.send_message(callback.from_user.id, "Введіть нове значення:")
         await edit_answers.edit_how_long()
 
+
+async def on_startup(dp):
+    await notify_admins(dp)
+
 if __name__ == '__main__':
-    executor.start_polling(dp)
+    executor.start_polling(dp, on_startup=on_startup)
