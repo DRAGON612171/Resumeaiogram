@@ -11,6 +11,7 @@ Server_port = os.getenv('PORT')
 Database = os.getenv('DATABASE')
 Ssh_username = os.getenv('SSH_USERNAME')
 Ssh_password = os.getenv('SSH_PASSWORD')
+Admins = os.getenv('ADMINS_ID')
 
 
 class Config(object):
