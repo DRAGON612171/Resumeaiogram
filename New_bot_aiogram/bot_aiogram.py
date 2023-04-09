@@ -29,15 +29,18 @@ async def clear(message: types.Message):
     await bot.send_message(message.chat.id, 'Ви впевнені, що хочете видалити всі данні?', reply_markup=confirm)
 
 
-@dp.message_handler(commands=['start'])
+@dp.message_handler(commands=['start'], state='*')
 async def start(message: types.Message):
-    await db_executions.add_id(message.chat.id)
+    try:
+        await db_executions.add_id(message.chat.id)
+    except:
+        pass
     await bot.send_message(message.chat.id, '👋Привіт!👋\n'  
                                             '😃Це бот для створення резюме, думаю тобі сподобається😃'.format(message.from_user.first_name), reply_markup=but_create)
 
 
 @dp.message_handler(content_types=['text'])
-async def name_surname(message: types.Message):
+async def create_resume(message: types.Message):
     if message.text == '📄Створити резюме📄':
         reply_markup1 = ReplyKeyboardMarkup(resize_keyboard=True)
         await message.answer('Напишіть ваше ім’я і прізвище', reply_markup=reply_markup1)
@@ -45,7 +48,7 @@ async def name_surname(message: types.Message):
 
 
 @dp.message_handler(content_types=['text'], state=Steps.name_surname)
-async def name_surname2(message: types.Message):
+async def name_surname(message: types.Message):
     try:
         await db_executions.add_name_surname(message.chat.id, message.text)
         print('name_surname {}'.format(message.text))
