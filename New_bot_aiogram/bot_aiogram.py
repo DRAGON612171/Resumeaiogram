@@ -24,7 +24,23 @@ bot = Bot(token=config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
-@dp.message_handler(commands=['clear'])
+@dp.message_handler(commands=['instruction'], state='*')
+async def instruction(message: types.Message):
+    await bot.send_message(message.chat.id, 'Тут все просто) \n'
+                                            'Всі данні слід записувати через кому, а коли побачите "🔴",'
+                                            'то треба вводити свої данні по одному, тобто один пункт'
+                                            ' в одному повідомленні.\n'
+                                            'Пропонуємо спочатку передивитися приклад заповнення: /example')
+
+
+@dp.message_handler(commands=['example'], state='*')
+async def example(message: types.Message):
+    photo = open('resume_example.jpg', 'rb')
+    await bot.send_message(message.chat.id, 'Ось приклад заповнення резюме:')
+    await bot.send_photo(message.chat.id, photo=photo)
+
+
+@dp.message_handler(commands=['clear'], state='*')
 async def clear(message: types.Message):
     await bot.send_message(message.chat.id, 'Ви впевнені, що хочете видалити всі данні?', reply_markup=confirm)
 
@@ -36,7 +52,10 @@ async def start(message: types.Message):
     except:
         pass
     await bot.send_message(message.chat.id, '👋Привіт!👋\n'  
-                                            '😃Це бот для створення резюме, думаю тобі сподобається😃'.format(message.from_user.first_name), reply_markup=but_create)
+                                            '😃Це бот для створення резюме, думаю тобі сподобається😃 \n'
+                                            'Якщо ви вперше складаєте резюме, то ознайомтеся як це краще зробити: \n'
+                                            '/instruction \n'
+                                            '/example'.format(message.from_user.first_name), reply_markup=but_create)
 
 
 @dp.message_handler(content_types=['text'])
@@ -120,7 +139,7 @@ async def get_projects(message: types.Message):
         get_projects = message.text
         print('projects {}'.format(get_projects))
         await Steps.get_lang.set()
-        await message.answer('Напишіть яку ви знаєте мову')
+        await message.answer('Напишіть яку ви знаєте мову🔴')
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -135,7 +154,7 @@ async def get_lang(message: types.Message):
             await db_executions.add_lang(message.chat.id, message.text)
             print('lang{}'.format(get_lang))
             await Steps.get_lang_level.set()
-            await message.answer('Напишіть рівень мови', reply_markup=lists)
+            await message.answer('Напишіть рівень мови🔴', reply_markup=lists)
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -194,7 +213,7 @@ async def get_description(message: types.Message):
         await db_executions.add_description(message.chat.id, message.text)
         print('description {}'.format(get_description))
         await Steps.get_work_experience.set()
-        await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)')
+        await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)🔴')
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -209,7 +228,7 @@ async def get_work_experience(message: types.Message):
             await db_executions.add_past_work(message.chat.id, message.text)
             print('get_work_experience {}'.format(get_work_experience))
             await Steps.get_job_description.set()
-            await message.answer('Опишіть, що робили на цій роботі', reply_markup=lists)
+            await message.answer('Опишіть, що робили на цій роботі🔴', reply_markup=lists)
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -224,7 +243,7 @@ async def get_job_description(message: types.Message):
             await db_executions.add_job_description(message.chat.id, message.text)
             print('get_job_description {}'.format(get_job_description))
             await Steps.get_how_long.set()
-            await message.answer('Скільки часу ви займали цю посаду?', reply_markup=lists)
+            await message.answer('Скільки часу ви займали цю посаду?🔴', reply_markup=lists)
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -239,7 +258,7 @@ async def get_how_long(message: types.Message):
             await db_executions.add_how_long(message.chat.id, message.text)
             print('get_how_long {}'.format(get_how_long))
             await Steps.get_work_experience.set()
-            await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)', reply_markup=lists)
+            await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)🔴', reply_markup=lists)
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
