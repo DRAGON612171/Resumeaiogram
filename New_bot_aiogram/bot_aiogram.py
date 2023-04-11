@@ -164,9 +164,11 @@ async def get_work_experience(message: types.Message):
 
 @dp.message_handler(state=Steps.get_job_description)
 async def get_job_description(message: types.Message):
-    if message.text.lower() == 'stop':
+    if message.text.lower() == 'Немає досвіду роботи':
+        # Треба функцію для запису даних
         await Steps.end_message.set()
         await message.answer('😎Ваше резюме майже готове, перевірте свої дані:😎')
+        print(f'''INSERT INTO public.resume_db1(past_work) VALUES ('{'Немає досвіду роботи'}');''')
     else:
         get_job_description = []
         get_job_description.append(message.text)
