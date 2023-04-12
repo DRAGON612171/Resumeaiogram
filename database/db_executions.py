@@ -11,7 +11,7 @@ async def select_all():
     await db.connect()
 
     # Выполнение запроса на чтение
-    result = await db.fetch('SELECT * FROM resume_db')
+    result = await db.fetch('SELECT * FROM resume_db1')
 
     right_values = []
     for row in result:

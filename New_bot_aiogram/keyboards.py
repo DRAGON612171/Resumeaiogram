@@ -83,3 +83,12 @@ lists = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True
 )
+
+but_skip = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+          KeyboardButton(text='Немає досвіду роботи')
+        ]
+    ],
+    resize_keyboard=True
+)
