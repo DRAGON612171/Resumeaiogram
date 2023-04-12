@@ -8,14 +8,18 @@ from Resumeaiogram.database.db_executions import select_all
 @app.route("/", methods=['GET', 'POST'])
 @app.route("/index/", methods=['GET', 'POST'])
 def login():
-    user = LoginForm()
-    if user.validate_on_submit():
+    error = None
+    form = LoginForm()
+    if form.validate_on_submit():
         result = asyncio.run(select_all())
         for data_tuple in result:
-            if int(user.user_id.data) in data_tuple and str(data_tuple[-1]) == str(user.password.data):
-                session['right_tuple'] = data_tuple
-                return redirect(url_for('resume'))
-    return render_template('login_form.html', user=user)
+            if int(form.user_id.data) in data_tuple:
+                if str(data_tuple[-1]) == str(form.password.data):
+                    session['right_tuple'] = data_tuple
+                    return redirect(url_for('resume'))
+            else:
+                error = 'Невірний логін або пароль'
+    return render_template('login_form.html', form=form, error=error)
 
 
 @app.route("/resume", methods=['GET', 'POST'])
