@@ -1,29 +1,25 @@
 import asyncio
 from Resumeaiogram.app import app
-from flask import render_template, redirect, url_for, session, flash
-from flask_login import current_user
+from flask import render_template, redirect, url_for, session
 from .forms import LoginForm
 from Resumeaiogram.database.db_executions import select_all
-from .models import User
 
 
 @app.route("/", methods=['GET', 'POST'])
 @app.route("/index/", methods=['GET', 'POST'])
 def login():
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('index'))
+    error = None
     form = LoginForm()
     if form.validate_on_submit():
         result = asyncio.run(select_all())
-        user = User.query.filter_by(user_id=form.user_id.data).first()
-        if user.password != form.password.data:
-            flash('Invalid username or password')
-            return redirect(url_for('login'))
         for data_tuple in result:
-            if int(form.user_id.data) in data_tuple and str(data_tuple[-1]) == str(form.password.data):
-                session['right_tuple'] = data_tuple
-                return redirect(url_for('resume'))
-    return render_template('login_form.html', form=form)
+            if int(form.user_id.data) in data_tuple:
+                if str(data_tuple[-1]) == str(form.password.data):
+                    session['right_tuple'] = data_tuple
+                    return redirect(url_for('resume'))
+            else:
+                error = 'Невірний логін або пароль'
+    return render_template('login_form.html', form=form, error=error)
 
 
 @app.route("/resume", methods=['GET', 'POST'])

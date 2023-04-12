@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 load_dotenv()
 
 Token = os.getenv('BOT_TOKEN')
@@ -11,7 +13,10 @@ Server_port = os.getenv('PORT')
 Database = os.getenv('DATABASE')
 Ssh_username = os.getenv('SSH_USERNAME')
 Ssh_password = os.getenv('SSH_PASSWORD')
+Admins = os.getenv('ADMINS_ID')
 
 
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+                              'sqlite:///' + os.path.join(basedir, 'app.db')

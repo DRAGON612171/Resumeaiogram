@@ -1,5 +1,6 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 
+
 but_create = ReplyKeyboardMarkup(
     keyboard=[
         [
@@ -79,6 +80,24 @@ lists = ReplyKeyboardMarkup(
     keyboard=[
         [
           KeyboardButton(text='stop')
+        ]
+    ],
+    resize_keyboard=True
+)
+
+confirm = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='Підтвердити', callback_data='confirm'),
+            InlineKeyboardButton(text='Скасувати', callback_data='cancel')
+        ]
+    ]
+)
+
+but_skip = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+          KeyboardButton(text='Немає досвіду роботи')
         ]
     ],
     resize_keyboard=True
