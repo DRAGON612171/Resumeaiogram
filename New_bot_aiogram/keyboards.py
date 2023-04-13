@@ -44,11 +44,11 @@ changes = InlineKeyboardMarkup(
                 InlineKeyboardButton(text='😲Проекти😲', callback_data='projects' )
             ],
             [
-                InlineKeyboardButton(text='✌Мови✌️', callback_data='lang')
+                InlineKeyboardButton(text='✌Мови та рівень знання цих мов✌️', callback_data='lang')
             ],
-            [
-                InlineKeyboardButton(text='🗣Рівень мови🗣', callback_data='lang_level' )
-            ],
+            # [
+            #     InlineKeyboardButton(text='🗣Рівень мови🗣', callback_data='lang_level' )
+            # ],
             [
                 InlineKeyboardButton(text="👍Країна👍", callback_data='country')
             ],
