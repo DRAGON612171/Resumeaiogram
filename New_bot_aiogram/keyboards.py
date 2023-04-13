@@ -23,7 +23,7 @@ end_keyboard = InlineKeyboardMarkup(
 changes = InlineKeyboardMarkup(
     inline_keyboard=[
             [
-             InlineKeyboardButton(text='😃Імя та прізвище😃', callback_data='name_surname' )
+             InlineKeyboardButton(text='😃Імя та прізвище😃', callback_data='1')
             ],
             [
                 InlineKeyboardButton(text='☎Номер телефону☎️', callback_data='phone')

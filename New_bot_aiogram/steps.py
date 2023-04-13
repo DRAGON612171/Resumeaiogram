@@ -19,7 +19,7 @@ class Steps(StatesGroup):
     get_job_description = State()
     get_how_long = State()
     end_message = State()
-    # name_surname_edit = State()
+    name_surname_edit = State()
     # phone_number_edit = State()
     # get_email_edit = State()
     # get_education_edit = State()
@@ -36,7 +36,4 @@ class Steps(StatesGroup):
     # get_job_description_edit = State()
     # get_how_long_edit = State()
     # end_message_edit = State()
-
-
-
 
