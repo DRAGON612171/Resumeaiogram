@@ -23,7 +23,7 @@ end_keyboard = InlineKeyboardMarkup(
 changes = InlineKeyboardMarkup(
     inline_keyboard=[
             [
-             InlineKeyboardButton(text='😃Імя та прізвище😃', callback_data='1')
+             InlineKeyboardButton(text='😃Імя та прізвище😃', callback_data='name_surname')
             ],
             [
                 InlineKeyboardButton(text='☎Номер телефону☎️', callback_data='phone')
@@ -64,13 +64,12 @@ changes = InlineKeyboardMarkup(
             [
                 InlineKeyboardButton(text="🤯Минула посада🤯", callback_data='past_work'),
             ],
-            [
-                InlineKeyboardButton(text="😱Що ви робили на минулій посаді😱", callback_data='job_description'),
-            ],
-            [
-                InlineKeyboardButton(text="🤯Термін вашої минулої роботи🤯", callback_data='how_long'),
-            ]
-
+            # [
+            #     InlineKeyboardButton(text="😱Що ви робили на минулій посаді😱", callback_data='job_description'),
+            # ],
+            # [
+            #     InlineKeyboardButton(text="🤯Термін вашої минулої роботи🤯", callback_data='how_long'),
+            # ]
 
     ],
 )
