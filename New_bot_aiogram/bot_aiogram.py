@@ -5,16 +5,18 @@ from aiogram import types, Dispatcher, Bot
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
+import config
 # from Resumeaiogram.New_bot_aiogram import edit_answers
 # from Resumeaiogram.app.database import db_executions
 # from Resumeaiogram import config
 
 import edit_answers
 #from app.database import db_executions
-from admins_notify import notify_admins
+# from admins_notify import notify_admins
+from database import db_executions
 
-from Resumeaiogram import config
-from Resumeaiogram.database import db_executions
+# from Resumeaiogram import config
+# from Resumeaiogram.database import db_executions
 
 # from app.database import db_executions
 from steps import *
@@ -298,58 +300,184 @@ async def bot_changes(callback: types.callback_query):
         await bot.send_message(callback.from_user.id, "Все готово, можете зайти до сайту і отримати своє резюме:")
         #Додати посилання на сайт
         await bot.send_message(callback.from_user.id, "")
+
+@dp.callback_query_handler(state=name_surname)
+async def edit_name_surname(callback: types.callback_query):
     if callback == 'name_surname':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_name_surname()
-    elif callback == 'phone':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_phone_number()
+        try:
+            await bot.send_message("Нове нове прізвище та ім'я")
+            await db_executions.add_name_surname(callback.from_user.id, callback.text)
+            await bot.send_message(callback.from_user.id, 'Ваші дані оновлено')
+            await bot.send_message(callback.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+        except:
+            await bot.send_message(callback.from_user.id, 'Виникла помилка')
+
+@dp.callback_query_handler(state=phone_number)
+async def edit_phone(callback: types.callback_query):
+    if callback == 'phone':
+        try:
+            await bot.send_message("напишіть новий номер телефону")
+            await db_executions.add_phone_number(callback.from_user.id, callback.text)
+            await bot.send_message(callback.from_user.id, 'Ваші дані оновлено')
+            await bot.send_message(callback.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+        except:
+            await bot.send_message(callback.from_user.id, 'Виникла помилка')
+
+@dp.callback_query_handler(state=get_email)
+async def edit_email(callback: types.callback_query):
     if callback == 'email':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_email()
-    elif callback == 'education':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_education()
+        try:
+            await bot.send_message("Введіть новий email")
+            await db_executions.add_email(callback.from_user.id, callback.text)
+            await bot.send_message(callback.from_user.id, 'Ваші дані оновлено')
+            await bot.send_message(callback.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+        except:
+            await bot.send_message(callback.from_user.id, 'Виникла помилка')
+
+@dp.callback_query_handler(state=get_education)
+async def edit_education(callback: types.callback_query):
+    if callback == 'education':
+        try:
+            await bot.send_message("Напишіть рівень вашої освіти")
+            await db_executions.add_education(callback.from_user.id, callback.text)
+            await bot.send_message(callback.from_user.id, 'Ваші дані оновлено')
+            await bot.send_message(callback.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+        except:
+            await bot.send_message(callback.from_user.id, 'Виникла помилка')
+
+@dp.callback_query_handler(state=get_soft_skills)
+async def edit_soft_skills(callback: types.callback_query):
     if callback == 'soft_skills':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_soft_skills()
-    elif callback == 'tech_skills':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_tech_skills()
+        try:
+            await bot.send_message("Напишіть рівень вашої освіти")
+            await db_executions.add_soft_skills(callback.from_user.id, callback.text)
+            await bot.send_message(callback.from_user.id, 'Ваші дані оновлено')
+            await bot.send_message(callback.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+        except:
+            await bot.send_message(callback.from_user.id, 'Виникла помилка')
+
+@dp.callback_query_handler(state=get_tech_skills)
+async def edit_tech_skills(callback: types.callback_query):
+    if callback == 'tech_skills':
+        try:
+            await bot.send_message("Напишіть ваші Tech Skills")
+            await db_executions.add_tech_skills(callback.from_user.id, callback.text)
+            await bot.send_message(callback.from_user.id, 'Ваші дані оновлено')
+            await bot.send_message(callback.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+        except:
+            await bot.send_message(callback.from_user.id, 'Виникла помилка')
+
+@dp.callback_query_handler(state=get_projects)
+async def edit_projects(callback: types.callback_query):
     if callback == 'projects':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_projects()
-    elif callback == 'lang':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_lang()
-    if callback == 'lang_level':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_lang_level()
-    elif callback == 'country':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_country()
+        try:
+            await bot.send_message("Додайте посилання на ваші проекти")
+            await db_executions.add_projects(callback.from_user.id, callback.text)
+            await bot.send_message(callback.from_user.id, 'Ваші дані оновлено')
+            await bot.send_message(callback.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+        except:
+            await bot.send_message(callback.from_user.id, 'Виникла помилка')
+
+@dp.callback_query_handler(state=get_projects)
+async def edit_lang(callback: types.callback_query):
+    if callback == 'lang':
+            try:
+                if callback.text.lower() == 'stop':
+                    await bot.send_message(callback.from_user.id, 'Ваші дані оновлено')
+                    await bot.send_message(callback.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+                else:
+                    await db_executions.add_lang(callback.from_user.id, callback.text)
+                    await Steps.get_lang_level.set()
+                    await bot.send_message(callback.from_user.id,'Напишіть рівень мови🔴', reply_markup=lists)
+            except:
+                await bot.send_message(callback.from_user.id, 'Виникла помилка')
+@dp.message_handler(state=Steps.get_lang_level)
+async def edit_lang_level(callback: types.callback_query):
+    try:
+        if callback.text.lower() == 'stop':
+            if callback.text.lower() == 'stop':
+                await bot.send_message(callback.from_user.id, 'Ваші дані оновлено')
+                await bot.send_message(callback.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+            else:
+                await db_executions.add_lang_level(callback.from_user.id, callback.text)
+                await Steps.get_lang.set()
+                await bot.send_message(callback.from_user.id,'Напишіть яку ви знаєте мову')
+    except:
+        await bot.send_message(callback.from_user.id, 'Виникла помилка')
+
+@dp.callback_query_handler(state=get_country)
+async def edit_country(callback: types.callback_query):
+    if callback == 'country':
+        try:
+            await bot.send_message("Напишіть з якої ви країни")
+            await db_executions.add_country(callback.from_user.id, callback.text)
+            await bot.send_message(callback.from_user.id, 'Ваші дані оновлено')
+            await bot.send_message(callback.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+        except:
+            await bot.send_message(callback.from_user.id, 'Виникла помилка')
+
+@dp.callback_query_handler(state=get_city)
+async def edit_city(callback: types.callback_query):
     if callback == 'city':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_city()
-    elif callback == 'profession':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_profession()
-    if callback == 'description':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_description()
-    elif callback == 'past_work':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_past_work()
-    if callback == 'job_description':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_job_description()
-    elif callback == 'how_long':
-        await bot.send_message(callback.from_user.id, "Введіть нове значення:")
-        await edit_answers.edit_how_long()
+        try:
+            await bot.send_message("Напишіть з якого ви міста")
+            await db_executions.add_city(callback.from_user.id, callback.text)
+            await bot.send_message(callback.from_user.id, 'Ваші дані оновлено')
+            await bot.send_message(callback.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+        except:
+            await bot.send_message(callback.from_user.id, 'Виникла помилка')
+    # await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_name_surname()
+    # elif callback == 'phone':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_phone_number()
+    # if callback == 'email':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_email()
+    # elif callback == :
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    # #     await edit_answers.edit_education()
+    # if callback == 'soft_skills':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_soft_skills()
+    # elif callback == 'tech_skills':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_tech_skills()
+    # if callback == 'projects':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_projects()
+    # elif callback == 'lang':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_lang()
+    # if callback == 'lang_level':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_lang_level()
+    # elif callback == 'country':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_country()
+    # if callback == 'city':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_city()
+    # elif callback == 'profession':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_profession()
+    # if callback == 'description':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_description()
+    # elif callback == 'past_work':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_past_work()
+    # if callback == 'job_description':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_job_description()
+    # elif callback == 'how_long':
+    #     await bot.send_message(callback.from_user.id, "Введіть нове значення:")
+    #     await edit_answers.edit_how_long()
 
 
 async def on_startup(dp):
     await notify_admins(dp)
 
 if __name__ == '__main__':
+    executor.start_polling(dp)
     executor.start_polling(dp, on_startup=on_startup)
