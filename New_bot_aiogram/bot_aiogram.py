@@ -307,7 +307,7 @@ async def bot_changes(callback: types.callback_query):
                                                       f"ID = {right_user[0]}\n"
                                                       f"PASSWORD = {right_user[-1]}")
         #Додати посилання на сайт
-        # await bot.send_message(callback.from_user.id, "")
+        await bot.send_message(callback.from_user.id, "http://goiteens2.pythonanywhere.com/")
 
     if callback.data == 'name_surname':
         await bot.send_message(callback.from_user.id, "Нове нове прізвище та ім'я")
