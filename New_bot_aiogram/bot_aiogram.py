@@ -296,8 +296,16 @@ async def bot_changes(callback: types.callback_query):
     if callback.data == '15':
         await bot.send_message(callback.from_user.id, "Що бажаєте змінити?", reply_markup=changes)
     elif callback.data == '16':
-        await db_executions.add_password(callback.chat.id)
-        await bot.send_message(callback.from_user.id, "Все готово, можете зайти до сайту і отримати своє резюме:")
+        result = await db_executions.select_all()
+        right_user = ''
+        for data_tuple in result:
+            if int(callback.from_user.id) in data_tuple:
+                right_user = data_tuple
+        await db_executions.add_password(callback.from_user.id)
+        await bot.send_message(callback.from_user.id, f"Все готово, можете зайти до сайту і отримати своє резюме🥳\n"
+                                                      "Ваші дані для входу:\n"
+                                                      f"ID = {right_user[0]}\n"
+                                                      f"PASSWORD = {right_user[-1]}")
         #Додати посилання на сайт
         # await bot.send_message(callback.from_user.id, "")
 
@@ -311,36 +319,48 @@ async def bot_changes(callback: types.callback_query):
 
     if callback.data == 'email':
         await bot.send_message(callback.from_user.id, "Введіть новий email")
-        await Steps.get_email_edit.set()
+        await Steps.email_edit.set()
 
     if callback.data == 'education':
         await bot.send_message(callback.from_user.id, "Напишіть рівень вашої освіти")
-        await Steps.get_education_edit.set()
+        await Steps.education_edit.set()
 
     if callback.data == 'soft_skills':
         await bot.send_message(callback.from_user.id, "Напишіть ваші Soft Skills")
-        await Steps.get_soft_skills_edit.set()
+        await Steps.soft_skills_edit.set()
     if callback.data == 'tech_skills':
         await bot.send_message(callback.from_user.id, "Напишіть ваші Tech Skills")
-        await Steps.get_tech_skills_edit.set()
+        await Steps.tech_skills_edit.set()
     if callback.data == 'projects':
         await bot.send_message(callback.from_user.id, "Додайте посилання на ваші проекти")
-        await Steps.get_projects_edit.set()
+        await Steps.projects_edit.set()
     if callback.data == 'lang':
         await bot.send_message(callback.from_user.id, "Напишіть які ви знаєте мови та рівні мов")
-        await Steps.get_lang.set()
+        await Steps.edit_langs.set()
     if callback.data == 'country':
         await bot.send_message(callback.from_user.id, "Напишіть з якої ви країни")
-        await Steps.get_country_edit.set()
+        await Steps.country_edit.set()
     if callback.data == 'city':
         await bot.send_message(callback.from_user.id, "Напишіть з якого ви міста")
-        await Steps.get_city_edit.set()
+        await Steps.city_edit.set()
     if callback.data == 'profession':
-        await bot.send_message(callback.from_user.id, "Напишіть, що ви очікуєте від цієї посади(можете розповісти щось про себе")
-        await Steps.get_profession_edit.set()
+        await bot.send_message(callback.from_user.id, "Напишіть на яку посаду ви претендуєте")
+        await Steps.profession_edit.set()
     if callback.data == 'description':
+        await bot.send_message(callback.from_user.id,
+                               "Напишіть, що ви очікуєте від цієї посади(можете розповісти щось про себе")
+        await Steps.description_edit.set()
+    if callback.data == 'past_work':
         await bot.send_message(callback.from_user.id, "Напишіть про ваш минулий досвід роботи(назва посади)")
-        await Steps.get_description_edit.set()
+        await Steps.edit_professions.set()
+    if callback.data == 'confirm':
+        try:
+            await db_executions.clear_table(callback.from_user.id)
+            await bot.send_message(callback.from_user.id,'Ваші данні видалено')
+        except:
+            await bot.send_message(callback.from_user.id, 'Виникла помилка')
+    if callback.data == 'cancel':
+        await bot.send_message(callback.from_user.id, 'Операція скасована')
 
 
 @dp.message_handler(state=Steps.name_surname_edit)
@@ -363,7 +383,7 @@ async def edit_phone(message: types.Message):
         await bot.send_message(message.from_user.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=Steps.get_email_edit)
+@dp.message_handler(state=Steps.email_edit)
 async def edit_email(message: types.Message):
     try:
         await db_executions.add_email(message.from_user.id, message.text)
@@ -373,7 +393,7 @@ async def edit_email(message: types.Message):
         await bot.send_message(message.from_user.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=Steps.get_education_edit)
+@dp.message_handler(state=Steps.education_edit)
 async def edit_education(message: types.Message):
     try:
         await db_executions.add_education(message.from_user.id, message.text)
@@ -383,7 +403,7 @@ async def edit_education(message: types.Message):
         await bot.send_message(message.from_user.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=Steps.get_soft_skills_edit)
+@dp.message_handler(state=Steps.soft_skills_edit)
 async def edit_soft_skills(message: types.Message):
     try:
         await db_executions.add_soft_skills(message.from_user.id, message.text)
@@ -393,7 +413,7 @@ async def edit_soft_skills(message: types.Message):
         await bot.send_message(message.from_user.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=Steps.get_tech_skills_edit)
+@dp.message_handler(state=Steps.tech_skills_edit)
 async def edit_tech_skills(message: types.Message):
     try:
         await db_executions.add_tech_skills(message.from_user.id, message.text)
@@ -403,7 +423,7 @@ async def edit_tech_skills(message: types.Message):
         await bot.send_message(message.from_user.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=get_projects)
+@dp.message_handler(state=Steps.projects_edit)
 async def edit_projects(message: types.Message):
     try:
         await db_executions.add_projects(message.from_user.id, message.text)
@@ -413,37 +433,47 @@ async def edit_projects(message: types.Message):
         await bot.send_message(message.from_user.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=Steps.get_lang_edit)
+@dp.message_handler(state=Steps.edit_langs)
+async def edit_langs(message: types.Message):
+    try:
+        await db_executions.clear_row(message.chat.id, 'lang')
+        await db_executions.clear_row(message.chat.id, 'lang_level')
+        await db_executions.add_lang(message.chat.id, message.text)
+        await Steps.lang_level_edit.set()
+        await bot.send_message(message.from_user.id, 'Напишіть рівень мови🔴', reply_markup=lists)
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
+
+
+@dp.message_handler(state=Steps.lang_edit)
 async def edit_lang(message: types.Message):
     try:
         if message.text.lower() == 'stop':
             await bot.send_message(message.from_user.id, 'Ваші дані оновлено')
             await bot.send_message(message.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
         else:
-            await db_executions.clear_row(message.chat.id, 'lang')
             await db_executions.add_lang(message.from_user.id, message.text)
-            await Steps.get_lang_level.set()
+            await Steps.lang_level_edit.set()
             await bot.send_message(message.from_user.id, 'Напишіть рівень мови🔴', reply_markup=lists)
     except:
         await bot.send_message(message.from_user.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=Steps.get_lang_level)
+@dp.message_handler(state=Steps.lang_level_edit)
 async def edit_lang_level(message: types.Message):
     try:
         if message.text.lower() == 'stop':
             await bot.send_message(message.from_user.id, 'Ваші дані оновлено')
             await bot.send_message(message.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
         else:
-            await db_executions.clear_row(message.chat.id, 'lang_level')
             await db_executions.add_lang_level(message.from_user.id, message.text)
-            await Steps.get_lang.set()
+            await Steps.lang_edit.set()
             await bot.send_message(message.from_user.id, 'Напишіть яку ви знаєте мову')
     except:
         await bot.send_message(message.from_user.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=Steps.get_country_edit)
+@dp.message_handler(state=Steps.country_edit)
 async def edit_country(message: types.Message):
     try:
         await db_executions.add_country(message.from_user.id, message.text)
@@ -453,7 +483,17 @@ async def edit_country(message: types.Message):
         await bot.send_message(message.from_user.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=Steps.get_profession_edit)
+@dp.message_handler(state=Steps.city_edit)
+async def edit_phone(message: types.Message):
+    try:
+        await db_executions.add_city(message.from_user.id, message.text)
+        await bot.send_message(message.from_user.id, 'Ваші дані оновлено')
+        await bot.send_message(message.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+    except:
+        await bot.send_message(message.from_user.id, 'Виникла помилка')
+
+
+@dp.message_handler(state=Steps.profession_edit)
 async def edit_profession(message: types.Message):
     try:
         await db_executions.add_profession(message.from_user.id, message.text)
@@ -462,67 +502,78 @@ async def edit_profession(message: types.Message):
     except:
         await bot.send_message(message.from_user.id, 'Виникла помилка')
 
-@dp.message_handler(state=Steps.get_description_edit)
+
+@dp.message_handler(state=Steps.description_edit)
 async def edit_description(message: types.Message):
     try:
         await db_executions.add_description(message.from_user.id, message.text)
-        await Steps.get_work_experience.set()
-        await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)')
+        await Steps.work_experience_edit.set()
+        await bot.send_message(message.from_user.id, 'Ваші дані оновлено')
+        await bot.send_message(message.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=Steps.get_work_experience_edit)
+@dp.message_handler(state=Steps.edit_professions)
+async def edit_work_experience(message: types.Message):
+    try:
+        await db_executions.clear_row(message.chat.id, 'job_description')
+        await db_executions.clear_row(message.chat.id, 'past_work')
+        await db_executions.clear_row(message.chat.id, 'how_long')
+        await db_executions.add_past_work(message.from_user.id, message.text)
+        await message.answer('Опишіть, що робили на цій роботі🔴', reply_markup=lists)
+        await Steps.job_description_edit.set()
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
+
+
+@dp.message_handler(state=Steps.work_experience_edit)
 async def edit_work_experience(message: types.Message):
     try:
         if message.text.lower() == 'stop':
             await bot.send_message(message.from_user.id, 'Ваші дані оновлено')
             await bot.send_message(message.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
         else:
-            await db_executions.clear_row(message.chat.id, 'work_experience')
             await db_executions.add_past_work(message.from_user.id, message.text)
             print('get_work_experience {}'.format(get_work_experience))
-            await Steps.get_job_description_edit.set()
+            await Steps.job_description_edit.set()
             await message.answer('Опишіть, що робили на цій роботі🔴', reply_markup=lists)
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=Steps.get_job_description_edit)
+@dp.message_handler(state=Steps.job_description_edit)
 async def edit_job_description(message: types.Message):
     try:
         if message.text.lower() == 'stop':
             await bot.send_message(message.from_user.id, 'Ваші дані оновлено')
             await bot.send_message(message.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
         else:
-            await db_executions.clear_row(message.chat.id, 'job_description')
             await db_executions.add_job_description(message.from_user.id, message.text)
             print('get_job_description {}'.format(get_job_description))
-            await Steps.get_how_long_edit.set()
+            await Steps.how_long_edit.set()
             await message.answer('Скільки часу ви займали цю посаду?🔴', reply_markup=lists)
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
-@dp.message_handler(state=Steps.get_how_long_edit)
+@dp.message_handler(state=Steps.how_long_edit)
 async def edit_how_long(message: types.Message):
     try:
         if message.text.lower() == 'stop':
             await bot.send_message(message.from_user.id, 'Ваші дані оновлено')
             await bot.send_message(message.from_user.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
         else:
-            await db_executions.clear_row(message.chat.id, 'how_long')
             await db_executions.add_how_long(message.from_user.id, message.text)
             print('get_how_long {}'.format(get_how_long))
-            await Steps.get_work_experience_edit.set()
+            await Steps.work_experience_edit.set()
             await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)🔴', reply_markup=lists)
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
-
 
 
 async def on_startup(dp):
     await notify_admins(dp)
 
 if __name__ == '__main__':
-    executor.start_polling(dp, on_startup=on_startup)
+    executor.start_polling(dp)

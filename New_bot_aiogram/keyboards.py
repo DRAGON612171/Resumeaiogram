@@ -41,7 +41,7 @@ changes = InlineKeyboardMarkup(
                 InlineKeyboardButton(text='😄Tech Навички😄', callback_data='tech_skills')
             ],
             [
-                InlineKeyboardButton(text='😲Проекти😲', callback_data='projects' )
+                InlineKeyboardButton(text='😲Проекти😲', callback_data='projects')
             ],
             [
                 InlineKeyboardButton(text='✌Мови та рівень знання цих мов✌️', callback_data='lang')

@@ -70,4 +70,5 @@ def resume():
     return render_template('index.html', profession=profession, name_surname=name_surname, phone_number=phone_number,
                            email=email, education=education, tech_skills=tech_skills, soft_skills=soft_skills,
                            projects=projects, lang=lang, lang_level=lang_level, country=country, city=city,
-                           past_work=past_work, how_long=how_long, job_description=job_description, description=description)
+                           past_work=past_work, how_long=how_long, job_description=job_description,
+                           description=description)
