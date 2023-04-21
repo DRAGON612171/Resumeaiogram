@@ -131,21 +131,22 @@ async def add_past_work(id, value):
 async def add_password(id):
     await db.connect()
     letters = string.ascii_letters
-    ''.join(random.choice(letters) for i in range(8))
-    await db.execute(f'''UPDATE public.resume_db1 SET password = '{letters}' WHERE id = {id};''')
+    password = ''.join(random.choice(letters) for i in range(8))
+    await db.execute(f'''UPDATE public.resume_db1 SET password = '{password}' WHERE id = {id};''')
     await db.disconnect()
 
 
 async def clear_row(id, row_name):
     await db.connect()
-    await db.execute(f'''UPDATE public.resume_db1 SET {row_name}=0 WHERE id={id};''')
+    await db.execute(f'''UPDATE public.resume_db1 SET {row_name}= NULL WHERE id={id};''')
     await db.disconnect()
 
 
 async def clear_table(id):
     await db.connect()
     await db.execute(f'''UPDATE public.resume_db1
-    SET name_surname=0, phone_number=0, email=0, education=0, lang=0, lang_level=0, country=0, city=0, description=0,
-    profession=0, soft_skills=0, tech_skills=0, projects=0, how_long=0, job_description=0, past_work=0
+    SET name_surname=NULL, phone_number=NULL, email=NULL, education=NULL, lang=NULL, lang_level=NULL, country=NULL, 
+    city=NULL, description=NULL,profession=NULL, soft_skills=NULL, tech_skills=NULL, projects=NULL, how_long=NULL, 
+    job_description=NULL, past_work=NULL, password = NULL
     WHERE id={id};''')
     await db.disconnect()

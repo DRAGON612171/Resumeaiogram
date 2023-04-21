@@ -23,7 +23,7 @@ end_keyboard = InlineKeyboardMarkup(
 changes = InlineKeyboardMarkup(
     inline_keyboard=[
             [
-             InlineKeyboardButton(text='😃Імя та прізвище😃', callback_data='name_surname' )
+             InlineKeyboardButton(text='😃Імя та прізвище😃', callback_data='name_surname')
             ],
             [
                 InlineKeyboardButton(text='☎Номер телефону☎️', callback_data='phone')
@@ -41,14 +41,14 @@ changes = InlineKeyboardMarkup(
                 InlineKeyboardButton(text='😄Tech Навички😄', callback_data='tech_skills')
             ],
             [
-                InlineKeyboardButton(text='😲Проекти😲', callback_data='projects' )
+                InlineKeyboardButton(text='😲Проекти😲', callback_data='projects')
             ],
             [
-                InlineKeyboardButton(text='✌Мови✌️', callback_data='lang')
+                InlineKeyboardButton(text='✌Мови та рівень знання цих мов✌️', callback_data='lang')
             ],
-            [
-                InlineKeyboardButton(text='🗣Рівень мови🗣', callback_data='lang_level' )
-            ],
+            # [
+            #     InlineKeyboardButton(text='🗣Рівень мови🗣', callback_data='lang_level' )
+            # ],
             [
                 InlineKeyboardButton(text="👍Країна👍", callback_data='country')
             ],
@@ -64,13 +64,12 @@ changes = InlineKeyboardMarkup(
             [
                 InlineKeyboardButton(text="🤯Минула посада🤯", callback_data='past_work'),
             ],
-            [
-                InlineKeyboardButton(text="😱Що ви робили на минулій посаді😱", callback_data='job_description'),
-            ],
-            [
-                InlineKeyboardButton(text="🤯Термін вашої минулої роботи🤯", callback_data='how_long'),
-            ]
-
+            # [
+            #     InlineKeyboardButton(text="😱Що ви робили на минулій посаді😱", callback_data='job_description'),
+            # ],
+            # [
+            #     InlineKeyboardButton(text="🤯Термін вашої минулої роботи🤯", callback_data='how_long'),
+            # ]
 
     ],
 )

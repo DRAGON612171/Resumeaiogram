@@ -8,12 +8,12 @@ class Database:
         self.password = config.Server_password
         self.database = config.Database
         self.host = config.Server_host
-        #self.port = config.Server_port
+        self.port = config.Server_port
         self.pool = None
 
     async def connect(self):
         self.pool = await asyncpg.create_pool(user=self.user, password=self.password,
-                                            database=self.database, host=self.host,) #port=self.port)
+                                            database=self.database, host=self.host, port=self.port)
 
     async def disconnect(self):
         if self.pool:
