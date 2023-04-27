@@ -44,11 +44,11 @@ changes = InlineKeyboardMarkup(
                 InlineKeyboardButton(text='😲Проекти😲', callback_data='projects')
             ],
             [
-                InlineKeyboardButton(text='✌Мови та рівень знання цих мов✌️', callback_data='lang')
+                InlineKeyboardButton(text='✌Мова✌️', callback_data='lang')
             ],
-            # [
-            #     InlineKeyboardButton(text='🗣Рівень мови🗣', callback_data='lang_level' )
-            # ],
+            [
+                InlineKeyboardButton(text='🗣Рівень мови🗣', callback_data='lang_level' )
+            ],
             [
                 InlineKeyboardButton(text="👍Країна👍", callback_data='country')
             ],
@@ -64,12 +64,12 @@ changes = InlineKeyboardMarkup(
             [
                 InlineKeyboardButton(text="🤯Минула посада🤯", callback_data='past_work'),
             ],
-            # [
-            #     InlineKeyboardButton(text="😱Що ви робили на минулій посаді😱", callback_data='job_description'),
-            # ],
-            # [
-            #     InlineKeyboardButton(text="🤯Термін вашої минулої роботи🤯", callback_data='how_long'),
-            # ]
+            [
+                InlineKeyboardButton(text="😱Що ви робили на минулій посаді😱", callback_data='job_description'),
+            ],
+            [
+                InlineKeyboardButton(text="🤯Термін вашої минулої роботи🤯", callback_data='how_long'),
+            ]
 
     ],
 )
