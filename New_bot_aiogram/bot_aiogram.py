@@ -5,27 +5,20 @@ from aiogram import types, Dispatcher, Bot
 from aiogram.types import message
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from sqlalchemy import update
 
-#import config
 # from Resumeaiogram.New_bot_aiogram import edit_answers
 # from Resumeaiogram.app.database import db_executions
 # from Resumeaiogram import config
-import config
-import edit_answers
-#from app.database import db_executions
-from admins_notify import notify_admins
-#from database import db_executions
 
+from admins_notify import notify_admins
 # from Resumeaiogram import config
 # from Resumeaiogram.database import db_executions
 from database import SQLAlchemy_connection
 from database.SQLAlchemy_connection import session, ResumeBot
-# from app.database import db_executions
 from steps import *
 from keyboards import *
 
-bot = Bot(token=BOT_TOKEN)
+bot = Bot(token='6149467271:AAF9A_Kl5L3lU8BcVjhfc3EP8tqrc-rv1Fs')
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
@@ -58,13 +51,11 @@ async def start(message: types.Message):
                                             'Якщо ви вперше складаєте резюме, то ознайомтеся як це краще зробити: \n'
                                             '/instruction \n'
                                             '/example'.format(message.from_user.first_name), reply_markup=but_create)
+    # Записуємо ID
     message = message.chat.id
     send_message = ResumeBot(id=message)
     session.add(send_message)
     session.commit()
-
-
-
 
 @dp.message_handler(content_types=['text'])
 async def create_resume(message: types.Message):
@@ -72,6 +63,13 @@ async def create_resume(message: types.Message):
         reply_markup1 = ReplyKeyboardMarkup(resize_keyboard=True)
         await message.answer('Напишіть ваше ім’я і прізвище', reply_markup=reply_markup1)
         await Steps.name_surname.set()
+    # PASSWORD
+    password_length = 8
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(random.choice(characters) for i in range(password_length))
+    send_password = session.query(ResumeBot).filter_by(id=message.chat.id).first()
+    send_password.password = password
+    session.commit()
 
 
 @dp.message_handler(content_types=['text'], state=Steps.name_surname)
@@ -254,25 +252,15 @@ async def get_description(message: types.Message):
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
-# past work
-# past work# past work# past work# past work# past work# past work# past work# past work
-# past work
-# past work
-# past work
-# past work
-# past work
-
-
-
 @dp.message_handler(state=Steps.get_work_experience)
 async def get_work_experience(message: types.Message):
     try:
         if message.text.lower() == 'stop':
             await Steps.end_message.set()
-            await message.answer('😎Ваше резюме готове, перевірте свої дані:😎')
+            await bot.send_message(message.chat.id,'😎Ваше резюме готове, перевірте свої дані:😎')
         else:
             session.query(ResumeBot).filter_by(id=message.chat.id).update(
-                {ResumeBot.work_experience: ResumeBot.work_experience + [message.text]},
+                {ResumeBot.past_work: ResumeBot.past_work + [message.text]},
                 synchronize_session=False
             )
             session.commit()
@@ -288,7 +276,7 @@ async def get_job_description(message: types.Message):
     try:
         if message.text.lower() == 'stop':
             await Steps.end_message.set()
-            await message.answer('😎Ваше резюме майже готове, перевірте свої дані:😎')
+            await bot.send_message(message.chat.id,'😎Ваше резюме майже готове, перевірте свої дані:😎')
         else:
             session.query(ResumeBot).filter_by(id=message.chat.id).update(
                 {ResumeBot.job_description: ResumeBot.job_description + [message.text]},
@@ -307,7 +295,7 @@ async def get_how_long(message: types.Message):
     try:
         if message.text.lower() == 'stop':
             await Steps.end_message.set()
-            await message.answer('😎Ваше резюме готове, перевірте свої дані:😎')
+            await bot.send_message(message.chat.id,'😎Ваше резюме готове, перевірте свої дані:😎')
         else:
             session.query(ResumeBot).filter_by(id=message.chat.id).update(
                 {ResumeBot.how_long: ResumeBot.how_long + [message.text]},
@@ -323,10 +311,10 @@ async def get_how_long(message: types.Message):
 
 @dp.message_handler(state=Steps.end_message)
 async def end_message(message: types.Message):
-    resumes = session.query(ResumeBot).all()
+    resumes = session.query(ResumeBot).filter_by(id=message.chat.id).all()
     for resume in resumes:
         print(resume.id, resume.name_surname, resume.phone_number, resume.email, resume.education, resume.lang, resume.lang_level, resume.country, resume.city, resume.description, resume.work_experience, resume.profession, resume.soft_skills, resume.tech_skills, resume.projects, resume.how_long, resume.job_description, resume.past_work, resume.password)
-    await bot.send_message(f"Ім'я та прізивще: {resume.name_surname}\n"
+    await bot.send_message(message.chat.id,f"Ім'я та прізивще: {resume.name_surname}\n"
                              f"Номер телефону: {resume.phone_number}\n"
                              f"Електронна пошта: {resume.email}\n"
                              f"Освіта: {resume.education}\n"
@@ -339,8 +327,7 @@ async def end_message(message: types.Message):
                              f"Ваше місто: {resume.city}\n"
                              f"Посада на яку претендуєте: {resume.profession}\n"
                              f"Ваші очікування від роботи: {resume.description}\n"
-                             f"Ваш минулий досвід роботи(минула посада): {resume.past_work}\n"
-                             f"Що ви робили на цій посаді: {resume.work_experience}\n"
+                             f"Що ви робили на минулій посаді: {resume.past_work}\n"
                              f"Скільки часу ви займали цю посаду: {resume.how_long}\n"
                              "Чи хочете відредагувати свої дані?'\n", reply_markup=end_keyboard)
 
@@ -349,7 +336,7 @@ async def bot_changes(callback: types.callback_query):
     if callback.data == '15':
         await bot.send_message(callback.from_user.id, "Що бажаєте змінити?", reply_markup=changes)
     elif callback.data == '16':
-        all = session.query(ResumeBot).all()
+        session.query(ResumeBot).filter_by(id=message.chat.id).all()
         for resume in all:
             await bot.send_message(callback.from_user.id, f"Все готово, можете зайти до сайту і отримати своє резюме🥳\n"
                                                       "Ваші дані для входу:\n"
@@ -403,13 +390,8 @@ async def bot_changes(callback: types.callback_query):
     #     await Steps.edit_professions.set()
     if callback.data == 'confirm':
         try:
-            # удаляем все записи из таблицы
             session.query(ResumeBot).filter_by(id=message.chat.id).delete()
-            # сохраняем изменения
             session.commit()
-            # закрываем сессию
-            session.close()
-            # await db_executions.clear_table(callback.from_user.id)
             await bot.send_message(callback.from_user.id,'Ваші данні видалено')
         except:
             await bot.send_message(callback.from_user.id, 'Виникла помилка')
@@ -571,19 +553,6 @@ async def edit_description(message: types.Message):
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
-
-
-# @dp.message_handler(state=Steps.past_work_edit)
-# async def edit_past_work(message: types.Message):
-#     try:
-#         send_message = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-#         send_message.past_work = message.text
-#         session.commit()
-#         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
-#         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-#     except:
-#         await bot.send_message(message.chat.id, 'Виникла помилка')
-
 
 @dp.message_handler(state=Steps.job_description_edit)
 async def edit_job_description(message: types.Message):
