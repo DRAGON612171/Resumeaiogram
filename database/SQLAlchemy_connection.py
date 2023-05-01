@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-db = create_engine('postgresql://user:password@localhost/mydatabase')
+db = create_engine('postgresql://postgres:Nazar2006@127.0.0.1/test_bot')
 Base = declarative_base()
 
 # engine = create_engine('postgresql://user:password@localhost/mydatabase')
@@ -18,17 +18,16 @@ class ResumeBot(Base):
     name_surname = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)
     email = Column(String, nullable=True)
-    education = Column(String, nullable=True)
+    education = Column(ARRAY(String), nullable=True)
     lang = Column(ARRAY(String), nullable=True)
     lang_level = Column(ARRAY(String), nullable=True)
     country = Column(String, nullable=True)
     city = Column(String, nullable=True)
     description = Column(String, nullable=True)
-    work_experience = Column(ARRAY(String), nullable=True)
     profession = Column(String, nullable=True)
-    soft_skills = Column(String, nullable=True)
-    tech_skills = Column(String, nullable=True)
-    projects = Column(String, nullable=True)
+    soft_skills = Column(ARRAY(String), nullable=True)
+    tech_skills = Column(ARRAY(String), nullable=True)
+    projects = Column(ARRAY(String), nullable=True)
     how_long = Column(ARRAY(String), nullable=True)
     job_description = Column(ARRAY(String), nullable=True)
     past_work = Column(ARRAY(String), nullable=True)
@@ -39,7 +38,7 @@ class ResumeBot(Base):
 
 if __name__ == '__main__':
     print('start')
-    # Base.metadata.create_all(db)
+    Base.metadata.create_all(db)
     select = sqlalchemy.select(ResumeBot)
     print(select)
     resumes = session.query(ResumeBot).all()
