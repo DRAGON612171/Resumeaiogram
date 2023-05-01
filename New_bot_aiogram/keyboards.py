@@ -62,13 +62,10 @@ changes = InlineKeyboardMarkup(
                 InlineKeyboardButton(text="😱Очікування😱", callback_data='description')
             ],
             [
-                InlineKeyboardButton(text="🤯Минула посада🤯", callback_data='past_work'),
-            ],
-            [
                 InlineKeyboardButton(text="😱Що ви робили на минулій посаді😱", callback_data='job_description'),
             ],
             [
-                InlineKeyboardButton(text="🤯Термін вашої минулої роботи🤯", callback_data='how_long'),
+                InlineKeyboardButton(text="🤯Скільки часу ви займали цю посаду🤯", callback_data='how_long'),
             ]
 
     ],
