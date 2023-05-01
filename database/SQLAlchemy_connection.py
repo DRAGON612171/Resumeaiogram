@@ -4,10 +4,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-db = create_engine('postgresql://postgres:Nazar2006@127.0.0.1/test_bot')
+db = create_engine('postgresql://user:password@localhost/mydatabase')
 Base = declarative_base()
 
-# engine = create_engine('postgresql://user:password@localhost/mydatabase')
+
 Session = sessionmaker(db)
 session = Session()
 
