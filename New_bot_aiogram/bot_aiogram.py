@@ -9,7 +9,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 # from Resumeaiogram.New_bot_aiogram import edit_answers
 # from Resumeaiogram.app.database import db_executions
 # from Resumeaiogram import config
-
+from config import Token
 from admins_notify import notify_admins
 # from Resumeaiogram import config
 # from Resumeaiogram.database import db_executions
@@ -18,7 +18,7 @@ from database.SQLAlchemy_connection import session, ResumeBot
 from steps import *
 from keyboards import *
 
-bot = Bot(token='6149467271:AAF9A_Kl5L3lU8BcVjhfc3EP8tqrc-rv1Fs')
+bot = Bot(token=Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
