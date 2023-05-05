@@ -29,31 +29,25 @@
             <div class="projects">
                 <h3 class="main_title">Project</h3>
                 <ol class="projects_list">
-                    <!--{% for i in range(projects | length) %}-->
-                    <li class="li"><a class="des" href={{projects}}>{{projects}}</a></li><!--[i]-->
-                    <!--{% endfor %}-->
+                    <li class="li"><a class="des" href={{projects}}>{{projects}}</a></li>
                 </ol>
             </div>
             <!-- Education-->
             <div class="education">
                 <h3 class="main_title">Education</h3>
-                <!--{% for i in range( education | length) %}-->
-                <h4>{{education}}</h4><!--[i]-->
-                <!--{% endfor %}-->
+                <h4>{{education}}</h4>
             </div>
             <!-- Work experience -->
             <div class="experience">
                 <h3 class="main_title">Work Experience</h3>
-                <!--{% for i in range( past_work | length) %}-->
                 <div>
-                    <h4 class="pst_wrk">{{past_work}}</h4><!--[i]-->
-                    <p>{{how_long}}</p> <!--[i]-->
+                    <h4 class="pst_wrk">{{past_work}}</h4>
+                    <p>{{how_long}}</p>
                     <ul class='pst_wrk_list'>
-                        <li class="li"> <span>{{job_description}}</span></li><!--[i]-->
+                        <li class="li"> <span>{{job_description}}</span></li>
                     </ul>
                     <hr>
                 </div>
-                <!--{% endfor %}-->
             </div>
         </div>
         <aside class="sidebar">
@@ -73,27 +67,21 @@
             <div class="tech">
                 <h3 class="sidebar_title">Tech Skills</h3>
                 <ul class="skills_list">
-                    <!--{% for i in range(tech_skills | length) %}-->
-                    <li class="skills_item"> <span class="skills_item_text">{{tech_skills}}</span></li><!--[i]-->
-                    <!--{% endfor %}-->
+                    <li class="skills_item"> <span class="skills_item_text">{{tech_skills}}</span></li>
                 </ul>
             </div>
             <!-- Soft Skills-->
             <div class="soft">
                 <h3 class="sidebar_title">Soft Skills</h3>
                 <ul class="skills_list">
-                    <!--{% for i in range(soft_skills | length) %}-->
-                    <li class="skills_item"> <span class="skills_item_text">{{soft_skills}}</span></li><!--[i]-->
-                    <!--{% endfor %}-->
+                    <li class="skills_item"> <span class="skills_item_text">{{soft_skills}}</span></li>
                 </ul>
             </div>
             <!--Langauge-->
             <div class="lang">
                 <h3 class="sidebar_title">Languages</h3>
                 <ul class="skills_list">
-                    <!--{% for i in range(lang | length) %}-->
-                    <li class="skills_item"><p> <span class="skills_item_text">{{lang}} - <span>{{lang_level[i]}}</span></span></p></li><!--[i]-->
-                    <!--{% endfor %}-->
+                    <li class="skills_item"><p> <span class="skills_item_text">{{lang}} - <span>{{lang_level[i]}}</span></span></p></li>
                 </ul>
             </div>
         </aside>

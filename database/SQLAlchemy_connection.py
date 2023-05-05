@@ -2,11 +2,11 @@ from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-import config
+#import config
 
-# from Resumeaiogram import config
+from Resumeaiogram import config
 
-db = create_engine('postgresql://postgres:Nazar2006@127.0.0.1/test_bot')
+db = create_engine(url=config.Database_URL)
 # 'postgresql://user:password@localhost/mydatabase'
 Base = declarative_base()
 # Base.metadata.create_all(db)
@@ -37,16 +37,16 @@ class ResumeBot(Base):
     password = Column(String, nullable=True)
 
     def add_lang(self, lang):
-        # if not self.lang:
-        #     self.lang = lang
-        # else:
+        if not self.lang:
+            self.lang = lang
+        else:
             self.lang.append(lang)
 
     def add_lang_level(self, lang_level):
-        # if not self.lang_level:
-        #     self.lang_level = lang_level
-        # else:
-            self.lang.append(lang_level)
+        if not self.lang_level:
+            self.lang_level = lang_level
+        else:
+            self.lang_level.append(lang_level)
 
     def update_info(self, id=None, name_surname=None, email=None, phone_number=None, education=None, lang=None,
                     lang_level=None, country=None, city=None, description=None, profession=None, soft_skills=None,
@@ -61,10 +61,10 @@ class ResumeBot(Base):
             self.phone_number = phone_number
         if education:
             self.education = education
-        # elif lang:
-        #     self.lang = lang
-        # if lang_level:
-        #     self.lang_level = lang_level
+        elif lang:
+            self.lang = lang
+        if lang_level:
+            self.lang_level = lang_level
         elif country:
             self.country = country
         if city:

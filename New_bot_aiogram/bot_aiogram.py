@@ -5,16 +5,18 @@ from aiogram import types, Dispatcher, Bot
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-import config
-# from Resumeaiogram import config
-# from admins_notify import notify_admins
-from database.SQLAlchemy_connection import session, ResumeBot
-# from Resumeaiogram.database import SQLAlchemy_connection
-# from Resumeaiogram.database.SQLAlchemy_connection import session, ResumeBot
+
+from Resumeaiogram import config
+from admins_notify import notify_admins
+from Resumeaiogram.database import SQLAlchemy_connection
+from Resumeaiogram.database.SQLAlchemy_connection import session, ResumeBot
 from steps import *
 from keyboards import *
 
-bot = Bot(token="6149467271:AAF9A_Kl5L3lU8BcVjhfc3EP8tqrc-rv1Fs")
+
+# from database.SQLAlchemy_connection import session, ResumeBot
+# import config
+bot = Bot(token=config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
@@ -38,10 +40,10 @@ async def example(message: types.Message):
 async def clear(message: types.Message):
     await bot.send_message(message.chat.id, 'Ви впевнені, що хочете видалити всі данні?', reply_markup=confirm)
 
-
+#Треба додати ноу команду, щоб побачити дані для входу на сайт
 @dp.message_handler(commands=['start'], state='*')
 async def start(message: types.Message):
-    await bot.send_message(message.chat.id, '👋Привіт!👋\n'  
+    await bot.send_message(message.chat.id, '👋Привіт!👋\n'
                                             '😃Це бот для створення резюме, думаю тобі сподобається😃 \n'
                                             'Якщо ви вперше складаєте резюме, то ознайомтеся як це краще зробити: \n'
                                             '/instruction \n'
@@ -96,7 +98,8 @@ async def phone_number(message: types.Message):
         print('phone_number {}'.format(message.text))
         await Steps.get_email.set()
         await message.answer('Напишіть ваш email')
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -109,7 +112,8 @@ async def get_email(message: types.Message):
         print('email {}'.format(get_email))
         await Steps.get_education.set()
         await message.answer('Напишіть рівень вашої освіти')
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -122,7 +126,8 @@ async def get_education(message: types.Message):
         print('get_education {}'.format(message.text))
         await message.answer('Напишіть ваші Tech Skills')
         await Steps.get_tech_skills.set()
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -135,7 +140,8 @@ async def get_tech_skills(message: types.Message):
         print('tech skills {}'.format(message.text))
         await Steps.get_soft_skills.set()
         await message.answer('Напишіть ваші Soft Skills')
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -148,7 +154,8 @@ async def get_soft_skills(message: types.Message()):
         print('soft skills {}'.format(message.text))
         await Steps.get_projects.set()
         await message.answer('Додайте посилання на ваші проекти')
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -161,49 +168,50 @@ async def get_projects(message: types.Message):
         print('projects {}'.format(message.text))
         await Steps.get_lang.set()
         await message.answer('Напишіть яку ви знаєте мову🔴')
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_lang)
 async def get_lang(message: types.Message):
-    # try:
+    try:
         if message.text.lower() == 'stop':
             await Steps.get_country.set()
             await message.answer('Напишіть з якої ви країни')
         else:
             existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-            existing_user.update_info(lang=message.text.split(','))
+            new = []
+            for i in existing_user.lang:
+                new.append(i)
+            new.append(message.text)
+            existing_user.update_info(lang=new)
             session.commit()
-            # existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-            # lang = message.text.split(',')
-            # existing_user.add_lang(lang)
-            # session.commit()
             print('lang{}'.format(message.text))
             await Steps.get_lang_level.set()
             await message.answer('Напишіть рівень мови🔴', reply_markup=lists)
-    # except:
-    #     await bot.send_message(message.chat.id, 'Виникла помилка')
+    except Exception as e:
+        print(e)
 
 
 @dp.message_handler(state=Steps.get_lang_level)
 async def get_lang_level(message: types.Message):
-    # try:
+    try:
         if message.text.lower() == 'stop':
             await Steps.get_country.set()
             await message.answer('Напишіть з якої ви країни')
         else:
             existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-            existing_user.update_info(lang_level=message.text.split(','))
+            new = []
+            for i in existing_user.lang_level:
+                new.append(i)
+            new.append(message.text)
+            existing_user.update_info(lang_level=new)
             session.commit()
-            # existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-            # lang_level = message.text.split(',')
-            # existing_user.add_lang_level(lang_level)
-            # session.commit()
             await Steps.get_lang.set()
             await message.answer('Напишіть яку ви знаєте мову')
-    # except:
-    #     await bot.send_message(message.chat.id, 'Виникла помилка')
+    except Exception as e:
+        print(e)
 
 
 @dp.message_handler(state=Steps.get_country)
@@ -215,7 +223,8 @@ async def get_country(message: types.Message):
         print('country {}'.format(message.text))
         await Steps.get_city.set()
         await message.answer('Напишіть з якого ви міста')
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -228,7 +237,8 @@ async def get_city(message: types.Message):
         print('city {}'.format(message.text))
         await Steps.get_profession.set()
         await message.answer('Напишіть на яку посаду претендуєте')
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -241,7 +251,8 @@ async def get_profession(message: types.Message):
         print('profession {}'.format(message.text))
         await Steps.get_description.set()
         await message.answer('Напишіть, що ви очікуєте від цієї посади(можете розповісти щось про себе')
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -254,63 +265,86 @@ async def get_description(message: types.Message):
         print('description {}'.format(message.text))
         await Steps.get_work_experience.set()
         await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)🔴')
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
+
 
 @dp.message_handler(state=Steps.get_work_experience)
 async def get_work_experience(message: types.Message):
+    existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
     try:
         if message.text.lower() == 'stop':
             await Steps.end_message.set()
-            await bot.send_message(message.chat.id,'😎Ваше резюме готове, перевірте свої дані:😎')
+            await bot.send_message(message.chat.id, '😎Ваше резюме готове, перевірте свої дані:😎')
         else:
-            # session.query(ResumeBot).filter_by(id=message.chat.id).update(
-            #     {ResumeBot.past_work: ResumeBot.past_work + [message.text]},
-            #     synchronize_session=False
-            # )
-            # session.commit()
-            print('get_work_experience {}'.format(message.text))
-            await Steps.get_job_description.set()
-            await message.answer('Опишіть, що робили на цій роботі🔴', reply_markup=lists)
-    except:
+            if existing_user.past_work == None:
+                existing_user.update_info(past_work=message.text)
+                session.commit()
+            else:
+                new = []
+                for i in existing_user.past_work:
+                    new.append(i)
+                new.append(message.text)
+                existing_user.update_info(past_work=new)
+                session.commit()
+                print('get_work_experience {}'.format(message.text))
+                await Steps.get_job_description.set()
+                await message.answer('Опишіть, що робили на цій роботі🔴', reply_markup=lists)
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_job_description)
 async def get_job_description(message: types.Message):
+    existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
     try:
         if message.text.lower() == 'stop':
             await Steps.end_message.set()
             await bot.send_message(message.chat.id,'😎Ваше резюме майже готове, перевірте свої дані:😎')
         else:
-            # session.query(ResumeBot).filter_by(id=message.chat.id).update(
-            #     {ResumeBot.job_description: ResumeBot.job_description + [message.text]},
-            #     synchronize_session=False
-            # )
-            session.commit()
+            if existing_user.job_description == None:
+                existing_user.update_info(job_description=message.text)
+                session.commit()
+            else:
+                new = []
+                for i in existing_user.job_description:
+                    new.append(i)
+                new.append(message.text)
+                existing_user.update_info(job_description=new)
+                session.commit()
             print('get_job_description {}'.format(message.text))
             await Steps.get_how_long.set()
             await message.answer('Скільки часу ви займали цю посаду?🔴', reply_markup=lists)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_how_long)
 async def get_how_long(message: types.Message):
+    existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
     try:
         if message.text.lower() == 'stop':
             await Steps.end_message.set()
-            await bot.send_message(message.chat.id,'😎Ваше резюме готове, перевірте свої дані:😎')
+            await bot.send_message(message.chat.id, '😎Ваше резюме готове, перевірте свої дані:😎')
         else:
-            # session.query(ResumeBot).filter_by(id=message.chat.id).update(
-            #     {ResumeBot.how_long: ResumeBot.how_long + [message.text]},
-            #     synchronize_session=False
-            # )
-            # session.commit()
+            if existing_user.how_long == None:
+                existing_user.update_info(how_long=message.text)
+                session.commit()
+            else:
+                new = []
+                for i in existing_user.how_long:
+                    new.append(i)
+                new.append(message.text)
+                existing_user.update_info(how_long=new)
+                session.commit()
             print('get_how_long {}'.format(message.text))
             await Steps.get_work_experience.set()
             await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)🔴', reply_markup=lists)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -318,23 +352,26 @@ async def get_how_long(message: types.Message):
 async def end_message(message: types.Message):
     resumes = session.query(ResumeBot).filter_by(id=message.chat.id).all()
     for resume in resumes:
-        print(resume.id, resume.name_surname, resume.phone_number, resume.email, resume.education, resume.lang, resume.lang_level, resume.country, resume.city, resume.description, resume.work_experience, resume.profession, resume.soft_skills, resume.tech_skills, resume.projects, resume.how_long, resume.job_description, resume.past_work, resume.password)
-    await bot.send_message(message.chat.id,f"Ім'я та прізивще: {resume.name_surname}\n"
-                             f"Номер телефону: {resume.phone_number}\n"
-                             f"Електронна пошта: {resume.email}\n"
-                             f"Освіта: {resume.education}\n"
-                             f"Tech Навички: {resume.tech_skills}\n"
-                             f"Soft Навички: {resume.soft_skills}\n"
-                             f"Посилання на ваші проекти: {resume.projects}\n"
-                             f"Мови: {resume.lang}\n"
-                             f"Рівень знання цих мов:{resume.lang_level}\n"
-                             f"Ваша країна: {resume.country}\n"
-                             f"Ваше місто: {resume.city}\n"
-                             f"Посада на яку претендуєте: {resume.profession}\n"
-                             f"Ваші очікування від роботи: {resume.description}\n"
-                             f"Що ви робили на минулій посаді: {resume.past_work}\n"
-                             f"Скільки часу ви займали цю посаду: {resume.how_long}\n"
-                             "Чи хочете відредагувати свої дані?'\n", reply_markup=end_keyboard)
+        # print(resume.id, resume.name_surname, resume.phone_number, resume.email, resume.education, resume.lang,
+        #       resume.lang_level, resume.country, resume.city, resume.description, resume.work_experience,
+        #       resume.profession, resume.soft_skills, resume.tech_skills, resume.projects, resume.how_long,
+        #       resume.job_description, resume.past_work, resume.password)
+        await bot.send_message(message.chat.id, f"Ім'я та прізивще: {resume.name_surname}\n"
+                                                f"Номер телефону: {resume.phone_number}\n"
+                                                f"Електронна пошта: {resume.email}\n"
+                                                f"Освіта: {resume.education}\n"
+                                                f"Tech Навички: {resume.tech_skills}\n"
+                                                f"Soft Навички: {resume.soft_skills}\n"
+                                                f"Посилання на ваші проекти: {resume.projects}\n"
+                                                f"Мови: {resume.lang}\n"
+                                                f"Рівень знання цих мов:{resume.lang_level}\n"
+                                                f"Ваша країна: {resume.country}\n"
+                                                f"Ваше місто: {resume.city}\n"
+                                                f"Посада на яку претендуєте: {resume.profession}\n"
+                                                f"Ваші очікування від роботи: {resume.description}\n"
+                                                f"Що ви робили на минулій посаді: {resume.past_work}\n"
+                                                f"Скільки часу ви займали цю посаду: {resume.how_long}\n"
+                                                "Чи хочете відредагувати свої дані?'\n", reply_markup=end_keyboard)
 
 
 @dp.callback_query_handler(state='*')
@@ -398,7 +435,8 @@ async def bot_changes(callback: types.callback_query):
             session.query(ResumeBot).filter_by(id=callback.from_user.id).delete()
             session.commit()
             await bot.send_message(callback.from_user.id, 'Ваші данні видалено')
-        except:
+        except Exception as e:
+            print(e)
             await bot.send_message(callback.from_user.id, 'Виникла помилка')
     if callback.data == 'cancel':
         await bot.send_message(callback.from_user.id, 'Операція скасована')
@@ -413,7 +451,8 @@ async def edit_name_surname(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -425,7 +464,8 @@ async def edit_phone_number(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -437,7 +477,8 @@ async def edit_email(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -449,7 +490,8 @@ async def edit_education(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -461,7 +503,8 @@ async def edit_soft_skills(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -473,7 +516,8 @@ async def edit_tech_skills(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -485,7 +529,8 @@ async def edit_projects(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -497,7 +542,8 @@ async def edit_lang(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -509,7 +555,8 @@ async def edit_lang_level(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -521,7 +568,8 @@ async def edit_country(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -533,7 +581,8 @@ async def edit_city(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -545,7 +594,8 @@ async def edit_profession(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -557,7 +607,8 @@ async def edit_description(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -569,7 +620,8 @@ async def edit_job_description(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -581,7 +633,8 @@ async def edit_how_long(message: types.Message):
         session.commit()
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
-    except:
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
