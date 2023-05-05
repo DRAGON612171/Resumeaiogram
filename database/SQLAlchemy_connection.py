@@ -1,9 +1,13 @@
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from Resumeaiogram import config
 
-db = create_engine(config.Database_URL)
+import config
+
+# from Resumeaiogram import config
+
+db = create_engine('postgresql://postgres:Nazar2006@127.0.0.1/test_bot')
+# 'postgresql://user:password@localhost/mydatabase'
 Base = declarative_base()
 # Base.metadata.create_all(db)
 
@@ -32,6 +36,18 @@ class ResumeBot(Base):
     past_work = Column(ARRAY(String), nullable=True)
     password = Column(String, nullable=True)
 
+    def add_lang(self, lang):
+        # if not self.lang:
+        #     self.lang = lang
+        # else:
+            self.lang.append(lang)
+
+    def add_lang_level(self, lang_level):
+        # if not self.lang_level:
+        #     self.lang_level = lang_level
+        # else:
+            self.lang.append(lang_level)
+
     def update_info(self, id=None, name_surname=None, email=None, phone_number=None, education=None, lang=None,
                     lang_level=None, country=None, city=None, description=None, profession=None, soft_skills=None,
                     tech_skills=None, projects=None, how_long=None, job_description=None, past_work=None, password=None):
@@ -45,10 +61,10 @@ class ResumeBot(Base):
             self.phone_number = phone_number
         if education:
             self.education = education
-        elif lang:
-            self.lang = lang
-        if lang_level:
-            self.lang_level = lang_level
+        # elif lang:
+        #     self.lang = lang
+        # if lang_level:
+        #     self.lang_level = lang_level
         elif country:
             self.country = country
         if city:
@@ -81,6 +97,6 @@ if __name__ == '__main__':
     resumes = session.query(ResumeBot).all()
     print(type(resumes))
     for resume in resumes:
-        print(resume.id, resume.name_surname, resume.phone_number, resume.email, resume.education, resume.lang, resume.lang_level, resume.country, resume.city, resume.description, resume.work_experience, resume.profession, resume.soft_skills, resume.tech_skills, resume.projects, resume.how_long, resume.job_description, resume.past_work, resume.password)
+        print(resume.id, resume.name_surname, resume.phone_number, resume.email, resume.education, resume.lang, resume.lang_level, resume.country, resume.city, resume.description, resume.past_work, resume.profession, resume.soft_skills, resume.tech_skills, resume.projects, resume.how_long, resume.job_description, resume.past_work, resume.password)
 
     print('finish')
