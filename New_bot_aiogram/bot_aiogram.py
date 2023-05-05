@@ -1,18 +1,20 @@
 import random
 import string
 from aiogram import types, Dispatcher, Bot
-from aiogram.types import message
+
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from Resumeaiogram import config
-from admins_notify import notify_admins
-# from Resumeaiogram.database import db_executions
-from Resumeaiogram.database import SQLAlchemy_connection
-from Resumeaiogram.database.SQLAlchemy_connection import session, ResumeBot
+
+import config
+# from Resumeaiogram import config
+# from admins_notify import notify_admins
+from database.SQLAlchemy_connection import session, ResumeBot
+# from Resumeaiogram.database import SQLAlchemy_connection
+# from Resumeaiogram.database.SQLAlchemy_connection import session, ResumeBot
 from steps import *
 from keyboards import *
 
-bot = Bot(token=config.Token)
+bot = Bot(token="6149467271:AAF9A_Kl5L3lU8BcVjhfc3EP8tqrc-rv1Fs")
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
@@ -128,7 +130,7 @@ async def get_education(message: types.Message):
 async def get_tech_skills(message: types.Message):
     try:
         existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-        existing_user.tech_skills = message.text
+        existing_user.update_info(tech_skills=message.text.split(','))
         session.commit()
         print('tech skills {}'.format(message.text))
         await Steps.get_soft_skills.set()
@@ -141,7 +143,7 @@ async def get_tech_skills(message: types.Message):
 async def get_soft_skills(message: types.Message()):
     try:
         existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-        existing_user.soft_skills = message.text
+        existing_user.update_info(soft_skills=message.text.split(','))
         session.commit()
         print('soft skills {}'.format(message.text))
         await Steps.get_projects.set()
@@ -154,7 +156,7 @@ async def get_soft_skills(message: types.Message()):
 async def get_projects(message: types.Message):
     try:
         existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-        existing_user.projects = message.text
+        existing_user.update_info(projects=message.text.split(','))
         session.commit()
         print('projects {}'.format(message.text))
         await Steps.get_lang.set()
@@ -165,47 +167,50 @@ async def get_projects(message: types.Message):
 
 @dp.message_handler(state=Steps.get_lang)
 async def get_lang(message: types.Message):
-    try:
+    # try:
         if message.text.lower() == 'stop':
             await Steps.get_country.set()
             await message.answer('Напишіть з якої ви країни')
         else:
-            session.query(ResumeBot).filter_by(id=message.chat.id).update(
-                {ResumeBot.lang: ResumeBot.lang + [message.text]},
-                synchronize_session=False
-            )
+            existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
+            existing_user.update_info(lang=message.text.split(','))
             session.commit()
+            # existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
+            # lang = message.text.split(',')
+            # existing_user.add_lang(lang)
+            # session.commit()
             print('lang{}'.format(message.text))
             await Steps.get_lang_level.set()
             await message.answer('Напишіть рівень мови🔴', reply_markup=lists)
-    except:
-        await bot.send_message(message.chat.id, 'Виникла помилка')
+    # except:
+    #     await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_lang_level)
 async def get_lang_level(message: types.Message):
-    try:
+    # try:
         if message.text.lower() == 'stop':
             await Steps.get_country.set()
             await message.answer('Напишіть з якої ви країни')
         else:
-            session.query(ResumeBot).filter_by(id=message.chat.id).update(
-                {ResumeBot.lang_level: ResumeBot.lang_level + [message.text]},
-                synchronize_session=False
-            )
+            existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
+            existing_user.update_info(lang_level=message.text.split(','))
             session.commit()
-            print('lang_level {}'.format(message.text))
+            # existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
+            # lang_level = message.text.split(',')
+            # existing_user.add_lang_level(lang_level)
+            # session.commit()
             await Steps.get_lang.set()
             await message.answer('Напишіть яку ви знаєте мову')
-    except:
-        await bot.send_message(message.chat.id, 'Виникла помилка')
+    # except:
+    #     await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_country)
 async def get_country(message: types.Message):
     try:
         existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-        existing_user.country = message.text
+        existing_user.update_info(country=message.text)
         session.commit()
         print('country {}'.format(message.text))
         await Steps.get_city.set()
@@ -218,7 +223,7 @@ async def get_country(message: types.Message):
 async def get_city(message: types.Message):
     try:
         existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-        existing_user.city = message.text
+        existing_user.update_info(city=message.text)
         session.commit()
         print('city {}'.format(message.text))
         await Steps.get_profession.set()
@@ -231,7 +236,7 @@ async def get_city(message: types.Message):
 async def get_profession(message: types.Message):
     try:
         existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-        existing_user.profession = message.text
+        existing_user.update_info(profession=message.text)
         session.commit()
         print('profession {}'.format(message.text))
         await Steps.get_description.set()
@@ -244,7 +249,7 @@ async def get_profession(message: types.Message):
 async def get_description(message: types.Message):
     try:
         existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
-        existing_user.description = message.text
+        existing_user.update_info(description=message.text)
         session.commit()
         print('description {}'.format(message.text))
         await Steps.get_work_experience.set()
@@ -259,11 +264,11 @@ async def get_work_experience(message: types.Message):
             await Steps.end_message.set()
             await bot.send_message(message.chat.id,'😎Ваше резюме готове, перевірте свої дані:😎')
         else:
-            session.query(ResumeBot).filter_by(id=message.chat.id).update(
-                {ResumeBot.past_work: ResumeBot.past_work + [message.text]},
-                synchronize_session=False
-            )
-            session.commit()
+            # session.query(ResumeBot).filter_by(id=message.chat.id).update(
+            #     {ResumeBot.past_work: ResumeBot.past_work + [message.text]},
+            #     synchronize_session=False
+            # )
+            # session.commit()
             print('get_work_experience {}'.format(message.text))
             await Steps.get_job_description.set()
             await message.answer('Опишіть, що робили на цій роботі🔴', reply_markup=lists)
@@ -278,10 +283,10 @@ async def get_job_description(message: types.Message):
             await Steps.end_message.set()
             await bot.send_message(message.chat.id,'😎Ваше резюме майже готове, перевірте свої дані:😎')
         else:
-            session.query(ResumeBot).filter_by(id=message.chat.id).update(
-                {ResumeBot.job_description: ResumeBot.job_description + [message.text]},
-                synchronize_session=False
-            )
+            # session.query(ResumeBot).filter_by(id=message.chat.id).update(
+            #     {ResumeBot.job_description: ResumeBot.job_description + [message.text]},
+            #     synchronize_session=False
+            # )
             session.commit()
             print('get_job_description {}'.format(message.text))
             await Steps.get_how_long.set()
@@ -297,11 +302,11 @@ async def get_how_long(message: types.Message):
             await Steps.end_message.set()
             await bot.send_message(message.chat.id,'😎Ваше резюме готове, перевірте свої дані:😎')
         else:
-            session.query(ResumeBot).filter_by(id=message.chat.id).update(
-                {ResumeBot.how_long: ResumeBot.how_long + [message.text]},
-                synchronize_session=False
-            )
-            session.commit()
+            # session.query(ResumeBot).filter_by(id=message.chat.id).update(
+            #     {ResumeBot.how_long: ResumeBot.how_long + [message.text]},
+            #     synchronize_session=False
+            # )
+            # session.commit()
             print('get_how_long {}'.format(message.text))
             await Steps.get_work_experience.set()
             await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)🔴', reply_markup=lists)
