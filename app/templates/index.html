@@ -26,22 +26,27 @@
                 <p class="description">{{description}}</p>
             </div>
             <!-- Projects -->
-            <div class="projects">
-                <h3 class="main_title">Project</h3>
-                <ol class="projects_list">
-                    {% for i in range(projects | length) %}
-                    <li class="li"><a class="des" href={{projects}}>{{projects[i]}}</a></li>
-                    {% endfor %}
-                </ol>
-            </div>
+            {%if projects %}
+                <div class="projects">
+                    <h3 class="main_title">Project</h3>
+                    <ol class="projects_list">
+                        {% for i in range(projects | length) %}
+                        <li class="li"><a class="des" href={{projects}}>{{projects[i]}}</a></li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            {% endif %}
             <!-- Education-->
+            {%if education %}
             <div class="education">
                 <h3 class="main_title">Education</h3>
                 {% for i in range( education | length) %}
                 <h4>{{education[i]}}</h4>
                 {% endfor %}
             </div>
+            {% endif %}
             <!-- Work experience -->
+            {%if past_work %}
             <div class="experience">
                 <h3 class="main_title">Work Experience</h3>
                 {% for i in range( past_work | length) %}
@@ -55,6 +60,7 @@
                 </div>
                 {% endfor %}
             </div>
+            {% endif %}
         </div>
         <aside class="sidebar">
             <!--Contact-->
@@ -70,6 +76,7 @@
                 </div>
             </div>
             <!--Tech skills-->
+            {%if tech_skills %}
             <div class="tech">
                 <h3 class="sidebar_title">Tech Skills</h3>
                 <ul class="skills_list">
@@ -78,7 +85,9 @@
                     {% endfor %}
                 </ul>
             </div>
+            {%endif%}
             <!-- Soft Skills-->
+            {%if soft_skills %}
             <div class="soft">
                 <h3 class="sidebar_title">Soft Skills</h3>
                 <ul class="skills_list">
@@ -87,7 +96,10 @@
                     {% endfor %}
                 </ul>
             </div>
+            {%endif%}
             <!--Langauge-->
+            {%if lang %}
+            {%if lang_level %}
             <div class="lang">
                 <h3 class="sidebar_title">Languages</h3>
                 <ul class="skills_list">
@@ -96,6 +108,8 @@
                     {% endfor %}
                 </ul>
             </div>
+            {%endif%}
+            {%endif%}
         </aside>
     </div>
 </body>

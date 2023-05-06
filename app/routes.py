@@ -127,7 +127,7 @@ def resume():
     def portal():
         nonlocal name_surname, phone_number, email, education, tech_skills, soft_skills, projects, lang, lang_level, \
                             country, city, past_work, description, profession, how_long, job_description
-        name_surname = right_tuple["id"]
+        name_surname = right_tuple["name_surname"]
         phone_number = right_tuple["phone_number"]
         email = right_tuple["email"]
         education = right_tuple["education"]
@@ -139,7 +139,7 @@ def resume():
         profession = right_tuple["profession"]
         soft_skills = right_tuple["soft_skills"]
         tech_skills = right_tuple["tech_skills"]
-        projects = [thing for thing in right_tuple["projects"]]
+        projects = right_tuple["projects"]
         how_long = right_tuple["how_long"]
         job_description = right_tuple["job_description"]
         past_work = right_tuple["past_work"]
