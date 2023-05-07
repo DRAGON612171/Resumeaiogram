@@ -34,7 +34,6 @@ class Steps(StatesGroup):
     edit_professions = State()
     profession_edit = State()
     description_edit = State()
-    # past_work_edit = State()
     work_experience_edit = State()
     job_description_edit = State()
     how_long_edit = State()

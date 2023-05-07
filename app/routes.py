@@ -79,27 +79,6 @@ def login():
 
     return render_template('login_form.html', form=form, error=error)
 
-# {
-#             "id": i.id,
-#             "name_surname" : i.name_surname,
-#             "phone_number" : i.phone_number,
-#             "email": i.email,
-#             "education" : i.education,
-#             "lang" : i.lang,
-#             "lang_level" : i.lang_level,
-#             "country" : i.country,
-#             "city" : i.city,
-#             "description" : i.description,
-#             "profession" : i.profession,
-#             "soft_skills": i.soft_skills,
-#             "tech_skills": i.tech_skills,
-#             "projects": i.projects,
-#             "how_long" : i.how_long,
-#             "job_description" : i.job_description,
-#             "past_work" : i.past_work,
-#             "password" : i.password,
-#             }
-
 
 @app.route("/resume", methods=['GET', 'POST'])
 def resume():

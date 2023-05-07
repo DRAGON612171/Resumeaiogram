@@ -62,6 +62,9 @@ changes = InlineKeyboardMarkup(
                 InlineKeyboardButton(text="😱Очікування😱", callback_data='description')
             ],
             [
+                InlineKeyboardButton(text="🧐Минулі посади🧐", callback_data='work_experience'),
+            ],
+            [
                 InlineKeyboardButton(text="😱Що ви робили на минулій посаді😱", callback_data='job_description'),
             ],
             [
@@ -75,7 +78,7 @@ changes = InlineKeyboardMarkup(
 lists = ReplyKeyboardMarkup(
     keyboard=[
         [
-          KeyboardButton(text='stop')
+          KeyboardButton(text='Stop')
         ]
     ],
     resize_keyboard=True
@@ -90,28 +93,12 @@ confirm = InlineKeyboardMarkup(
     ]
 )
 
-but_skip = ReplyKeyboardMarkup(
+work_pass = ReplyKeyboardMarkup(
     keyboard=[
         [
+          KeyboardButton(text='Stop'),
           KeyboardButton(text='Немає досвіду роботи')
         ]
     ],
     resize_keyboard=True
-)
-
-clear_data = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-        InlineKeyboardButton(text='Видалити минулі дані', callback_data='clear')
-        ]
-    ]
-)
-
-confirm_del = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(text='Підтвердити', callback_data='confirm_del'),
-            InlineKeyboardButton(text='Скасувати', callback_data='cancel_del')
-        ]
-    ]
 )
