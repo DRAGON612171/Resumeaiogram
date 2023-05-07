@@ -40,6 +40,7 @@ async def example(message: types.Message):
 async def clear(message: types.Message):
     await bot.send_message(message.chat.id, 'Ви впевнені, що хочете видалити всі данні?', reply_markup=confirm)
 
+
 #Треба додати ноу команду, щоб побачити дані для входу на сайт
 @dp.message_handler(commands=['start'], state='*')
 async def start(message: types.Message):
@@ -50,7 +51,10 @@ async def start(message: types.Message):
                                             '/example'.format(message.from_user.first_name), reply_markup=but_create)
     existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
     if existing_user:
-        pass
+        await bot.send_message(message.chat.id, text='Чи бажаєте ви видалити минулі дані?', reply_markup=clear_data)
+        existing_user.lang = None
+        existing_user.lang_level = None
+        session.commit()
     else:
         # Додати новий запис про користувача в базу даних
         new_user = ResumeBot(id=message.chat.id)
@@ -182,8 +186,9 @@ async def get_lang(message: types.Message):
         else:
             existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
             new = []
-            for i in existing_user.lang:
-                new.append(i)
+            if existing_user.lang:
+                for i in existing_user.lang:
+                    new.append(i)
             new.append(message.text)
             existing_user.update_info(lang=new)
             session.commit()
@@ -203,8 +208,9 @@ async def get_lang_level(message: types.Message):
         else:
             existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
             new = []
-            for i in existing_user.lang_level:
-                new.append(i)
+            if existing_user.lang_level:
+                for i in existing_user.lang_level:
+                    new.append(i)
             new.append(message.text)
             existing_user.update_info(lang_level=new)
             session.commit()
@@ -376,6 +382,10 @@ async def end_message(message: types.Message):
 
 @dp.callback_query_handler(state='*')
 async def bot_changes(callback: types.callback_query):
+    if callback.data == 'clear':
+        await bot.send_message(callback.from_user.id, 'Ви впевнені, що хочете видалити свої дані?', reply_markup=confirm_del)
+    elif callback.data == 'confirm_del':
+
     if callback.data == '15':
         await bot.send_message(callback.from_user.id, "Що бажаєте змінити?", reply_markup=changes)
     elif callback.data == '16':
@@ -414,7 +424,7 @@ async def bot_changes(callback: types.callback_query):
         await Steps.projects_edit.set()
     if callback.data == 'lang':
         await bot.send_message(callback.from_user.id, "Напишіть які ви знаєте мови та рівні мов")
-        await Steps.edit_langs.set()
+        await Steps.lang_edit.set()
     if callback.data == 'country':
         await bot.send_message(callback.from_user.id, "Напишіть з якої ви країни")
         await Steps.country_edit.set()

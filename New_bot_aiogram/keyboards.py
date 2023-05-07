@@ -98,3 +98,20 @@ but_skip = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True
 )
+
+clear_data = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+        InlineKeyboardButton(text='Видалити минулі дані', callback_data='clear')
+        ]
+    ]
+)
+
+confirm_del = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='Підтвердити', callback_data='confirm_del'),
+            InlineKeyboardButton(text='Скасувати', callback_data='cancel_del')
+        ]
+    ]
+)

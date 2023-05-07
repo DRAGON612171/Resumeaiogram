@@ -36,18 +36,6 @@ class ResumeBot(Base):
     past_work = Column(ARRAY(String), nullable=True)
     password = Column(String, nullable=True)
 
-    def add_lang(self, lang):
-        if not self.lang:
-            self.lang = lang
-        else:
-            self.lang.append(lang)
-
-    def add_lang_level(self, lang_level):
-        if not self.lang_level:
-            self.lang_level = lang_level
-        else:
-            self.lang_level.append(lang_level)
-
     def update_info(self, id=None, name_surname=None, email=None, phone_number=None, education=None, lang=None,
                     lang_level=None, country=None, city=None, description=None, profession=None, soft_skills=None,
                     tech_skills=None, projects=None, how_long=None, job_description=None, past_work=None, password=None):
