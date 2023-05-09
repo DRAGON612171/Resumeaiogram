@@ -1,41 +1,16 @@
-# import sys
-# sys.path.insert(0, '/home/goiteens2/')
 from flask import render_template, redirect, url_for, session as ses
 from Resumeaiogram.app.forms import LoginForm
 from Resumeaiogram.app import app
-from sqlalchemy.types import String, Integer, ARRAY
-from sqlalchemy import Column, create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from Resumeaiogram import config
+from Resumeaiogram.database.SQLAlchemy_connection import ResumeBot
 
 
-db = create_engine(config.Database_URL)
+db = create_engine('postgresql://poop402r:3IC8RGJaHmQs@ep-bitter-paper-853686.eu-central-1.aws.neon.tech/neondb')
 Base = declarative_base()
 Session = sessionmaker(db)
 session = Session()
-
-
-class ResumeBot(Base):
-    __tablename__ = 'resume_bot'
-    id = Column(Integer, primary_key=True)
-    name_surname = Column(String, nullable=True)
-    phone_number = Column(String, nullable=True)
-    email = Column(String, nullable=True)
-    education = Column(ARRAY(String), nullable=True)
-    lang = Column(ARRAY(String), nullable=True)
-    lang_level = Column(ARRAY(String), nullable=True)
-    country = Column(String, nullable=True)
-    city = Column(String, nullable=True)
-    description = Column(String, nullable=True)
-    profession = Column(String, nullable=True)
-    soft_skills = Column(ARRAY(String), nullable=True)
-    tech_skills = Column(ARRAY(String), nullable=True)
-    projects = Column(ARRAY(String), nullable=True)
-    how_long = Column(ARRAY(String), nullable=True)
-    job_description = Column(ARRAY(String), nullable=True)
-    past_work = Column(ARRAY(String), nullable=True)
-    password = Column(String, nullable=True)
 
 
 @app.route("/", methods=['GET', 'POST'])
