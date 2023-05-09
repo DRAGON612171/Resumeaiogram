@@ -44,11 +44,11 @@ changes = InlineKeyboardMarkup(
                 InlineKeyboardButton(text='😲Проекти😲', callback_data='projects')
             ],
             [
-                InlineKeyboardButton(text='✌Мови та рівень знання цих мов✌️', callback_data='lang')
+                InlineKeyboardButton(text='✌Мова✌️', callback_data='lang')
             ],
-            # [
-            #     InlineKeyboardButton(text='🗣Рівень мови🗣', callback_data='lang_level' )
-            # ],
+            [
+                InlineKeyboardButton(text='🗣Рівень мови🗣', callback_data='lang_level' )
+            ],
             [
                 InlineKeyboardButton(text="👍Країна👍", callback_data='country')
             ],
@@ -62,14 +62,14 @@ changes = InlineKeyboardMarkup(
                 InlineKeyboardButton(text="😱Очікування😱", callback_data='description')
             ],
             [
-                InlineKeyboardButton(text="🤯Минула посада🤯", callback_data='past_work'),
+                InlineKeyboardButton(text="🧐Минулі посади🧐", callback_data='work_experience'),
             ],
-            # [
-            #     InlineKeyboardButton(text="😱Що ви робили на минулій посаді😱", callback_data='job_description'),
-            # ],
-            # [
-            #     InlineKeyboardButton(text="🤯Термін вашої минулої роботи🤯", callback_data='how_long'),
-            # ]
+            [
+                InlineKeyboardButton(text="😱Що ви робили на минулій посаді😱", callback_data='job_description'),
+            ],
+            [
+                InlineKeyboardButton(text="🤯Скільки часу ви займали цю посаду🤯", callback_data='how_long'),
+            ]
 
     ],
 )
@@ -78,7 +78,7 @@ changes = InlineKeyboardMarkup(
 lists = ReplyKeyboardMarkup(
     keyboard=[
         [
-          KeyboardButton(text='stop')
+          KeyboardButton(text='Stop')
         ]
     ],
     resize_keyboard=True
@@ -93,9 +93,10 @@ confirm = InlineKeyboardMarkup(
     ]
 )
 
-but_skip = ReplyKeyboardMarkup(
+work_pass = ReplyKeyboardMarkup(
     keyboard=[
         [
+          KeyboardButton(text='Stop'),
           KeyboardButton(text='Немає досвіду роботи')
         ]
     ],

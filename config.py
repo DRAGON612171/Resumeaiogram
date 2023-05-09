@@ -14,7 +14,9 @@ Database = os.getenv('DATABASE')
 Ssh_username = os.getenv('SSH_USERNAME')
 Ssh_password = os.getenv('SSH_PASSWORD')
 Admins = os.getenv('ADMINS_ID')
+Database_URL = os.getenv('DATABASE_URL')
 
 
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+
