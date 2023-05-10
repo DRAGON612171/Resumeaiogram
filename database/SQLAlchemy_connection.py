@@ -1,15 +1,12 @@
-from sqlalchemy import *
+from sqlalchemy import create_engine, Column, Integer, String, ARRAY, select
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-
-#import config
 
 from Resumeaiogram import config
 
 db = create_engine(url=config.Database_URL)
-# 'postgresql://user:password@localhost/mydatabase'
 Base = declarative_base()
-# Base.metadata.create_all(db)
+
 
 Session = sessionmaker(db)
 session = Session()

@@ -6,45 +6,50 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from Resumeaiogram import config
 from admins_notify import notify_admins
 from Resumeaiogram.database.SQLAlchemy_connection import session, ResumeBot
-from steps import *
-from keyboards import *
+from steps import Steps
+from keyboards import but_create, end_keyboard, changes, lists, confirm, work_pass
+from aiogram.dispatcher import FSMContext
 
 bot = Bot(token=config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
 @dp.message_handler(commands=['instruction'], state='*')
-async def instruction(message: types.Message):
+async def instruction(message: types.Message,state: FSMContext):
     await bot.send_message(message.chat.id, 'Тут все просто) \n'
                                             'Всі данні слід записувати через кому, а коли побачите "🔴",'
                                             'то треба вводити свої данні по одному, тобто один пункт'
                                             ' в одному повідомленні.\n'
                                             'Пропонуємо спочатку передивитися приклад заповнення: /example')
-
+    await state.finish()
 
 @dp.message_handler(commands=['example'], state='*')
-async def example(message: types.Message):
+async def example(message: types.Message,state: FSMContext):
     photo = open('resume_example.jpg', 'rb')
     await bot.send_message(message.chat.id, 'Ось приклад заповнення резюме:')
     await bot.send_photo(message.chat.id, photo=photo)
+    await state.finish()
 
 
 @dp.message_handler(commands=['clear'], state='*')
-async def clear(message: types.Message):
+async def clear(message: types.Message,state: FSMContext):
     await bot.send_message(message.chat.id, 'Ви впевнені, що хочете видалити всі данні?', reply_markup=confirm)
+    await state.finish()
+
 
 
 @dp.message_handler(commands=['website'], state='*')
-async def website(message: types.Message):
+async def website(message: types.Message,state: FSMContext):
     resumes = session.query(ResumeBot).filter_by(id=message.chat.id).all()
     for resume in resumes:
         await bot.send_message(message.chat.id, f"Ваші дані для входу:\n"
                                                 f"ID = {resume.id}\n"
                                                 f"PASSWORD = {resume.password}")
+    await state.finish()
 
 
 @dp.message_handler(commands=['start'], state='*')
-async def start(message: types.Message):
+async def start(message: types.Message, state: FSMContext):
     await bot.send_message(message.chat.id, '👋Привіт, {}!👋\n'
                                             '😃Це бот для створення резюме, думаю тобі сподобається😃 \n'
                                             'Якщо ви вперше складаєте резюме, то ознайомтеся як це краще зробити: \n'
@@ -53,6 +58,7 @@ async def start(message: types.Message):
                                             'Якщо бажаєте видалити минулі дані, то використайте команду /clear'.format
     (message.from_user.first_name), reply_markup=but_create)
     existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
+    await state.finish()
     if existing_user:
         pass
     else:
@@ -65,8 +71,7 @@ async def start(message: types.Message):
 @dp.message_handler(content_types=['text'])
 async def create_resume(message: types.Message):
     if message.text == '📄Створити резюме📄':
-        reply_markup1 = ReplyKeyboardMarkup(resize_keyboard=True)
-        await message.answer('Напишіть ваше ім’я і прізвище', reply_markup=reply_markup1)
+        await message.answer('Напишіть ваше ім’я і прізвище')
         # PASSWORD
         characters = string.ascii_letters + string.digits + string.punctuation
         password = ''.join(random.choice(characters) for i in range(8))
@@ -268,41 +273,44 @@ async def get_description(message: types.Message):
 @dp.message_handler(state=Steps.get_work_experience)
 async def get_work_experience(message: types.Message):
     existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
+    new = []
     try:
         if message.text.lower() == 'stop' or message.text.lower() == 'немає досвіду роботи':
             await bot.send_message(message.chat.id, '😎Ваше резюме готове, перевірте свої дані:😎')
             await end_message(message)
         else:
             if existing_user.past_work == None:
-                existing_user.update_info(past_work=str(message.text))
-                session.commit()
-            else:
-                new = []
-                for i in existing_user.past_work:
-                    new.append(i)
-                new.append(str(message.text))
+                new.append(message.text)
                 existing_user.update_info(past_work=new)
                 session.commit()
-                print('get_work_experience {}'.format(new))
-                await Steps.get_job_description.set()
-                await message.answer('Опишіть, що робили на цій роботі🔴', reply_markup=lists)
-    except :
+            else:
+                for i in existing_user.past_work:
+                    new.append(i)
+                new.append(message.text)
+                existing_user.update_info(past_work=new)
+                session.commit()
+            print('get_work_experience {}'.format(message.text))
+            await Steps.get_job_description.set()
+            await message.answer('Опишіть, що робили на цій роботі🔴', reply_markup=lists)
+    except Exception as e:
+        print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(state=Steps.get_job_description)
 async def get_job_description(message: types.Message):
     existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
+    new = []
     try:
         if message.text.lower() == 'stop' or message.text.lower() == 'Немає досвіду роботи':
             await bot.send_message(message.chat.id, '😎Ваше резюме готове, перевірте свої дані:😎')
             await end_message(message)
         else:
             if existing_user.job_description == None:
-                existing_user.update_info(job_description=str(message.text))
+                new.append(message.text)
+                existing_user.update_info(job_description=new)
                 session.commit()
             else:
-                new = []
                 for i in existing_user.job_description:
                     new.append(i)
                 new.append(str(message.text))
@@ -318,16 +326,17 @@ async def get_job_description(message: types.Message):
 @dp.message_handler(state=Steps.get_how_long)
 async def get_how_long(message: types.Message):
     existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
+    new = []
     try:
         if message.text.lower() == 'stop' or message.text.lower() == 'Немає досвіду роботи':
             await bot.send_message(message.chat.id, '😎Ваше резюме готове, перевірте свої дані:😎')
             await end_message(message)
         else:
             if existing_user.how_long == None:
-                existing_user.update_info(how_long=str(message.text))
+                new.append(message.text)
+                existing_user.update_info(how_long=new)
                 session.commit()
             else:
-                new = []
                 for i in existing_user.how_long:
                     new.append(i)
                 new.append(str(message.text))

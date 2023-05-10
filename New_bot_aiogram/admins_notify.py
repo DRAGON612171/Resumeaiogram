@@ -8,3 +8,4 @@ async def notify_admins(dp: Dispatcher):
             await dp.bot.send_message(chat_id=admin, text='Бот працює!')
         except Exception as error:
             print(f'Не удалось отправить сообщение разработчику {admin}. Ошибка: {error}')
+

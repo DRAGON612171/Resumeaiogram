@@ -15,7 +15,6 @@ class Steps(StatesGroup):
     get_city = State()
     get_profession = State()
     get_description = State()
-    # get_past_work = State()
     get_work_experience = State()
     get_job_description = State()
     get_how_long = State()
@@ -38,4 +37,3 @@ class Steps(StatesGroup):
     job_description_edit = State()
     how_long_edit = State()
     end_message_edit = State()
-
