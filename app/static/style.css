@@ -123,3 +123,7 @@ body{
     color: #fff;
 }
 
+.image {
+    width: 450px;
+    margin: 0;
+}
