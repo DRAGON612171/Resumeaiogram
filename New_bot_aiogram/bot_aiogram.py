@@ -71,7 +71,7 @@ async def start(message: types.Message, state: FSMContext):
 @dp.message_handler(content_types=['text'])
 async def create_resume(message: types.Message):
     if message.text == '📄Створити резюме📄':
-        await message.answer('Напишіть ваше ім’я і прізвище')
+        await message.answer('Напишіть ваше ім’я і прізвище', reply_markup=types.ReplyKeyboardRemove())
         # PASSWORD
         characters = string.ascii_letters + string.digits + string.punctuation
         password = ''.join(random.choice(characters) for i in range(8))
@@ -318,7 +318,7 @@ async def get_job_description(message: types.Message):
                 session.commit()
             print('get_job_description {}'.format(message.text))
             await Steps.get_how_long.set()
-            await message.answer('Скільки часу ви займали цю посаду?🔴', reply_markup=lists)
+            await message.answer('Скільки часу ви займали цю посаду?🔴', reply_markup=types.ReplyKeyboardRemove())
     except :
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -344,7 +344,7 @@ async def get_how_long(message: types.Message):
                 session.commit()
             print('get_how_long {}'.format(message.text))
             await Steps.get_work_experience.set()
-            await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)🔴', reply_markup=lists)
+            await message.answer('Напишіть про ваш минулий досвід роботи(назва посади)🔴')
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
