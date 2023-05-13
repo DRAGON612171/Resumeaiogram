@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en" class="background-styles">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Resume</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+
+body{
+    background-size: cover;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.main_container{
+    display: flex;
+    width: 1200px;
+    background-color: #fff;
+    margin: 40px auto;
+}
+
+.main_context{
+    width: 750px;
+    padding:65px 90px;
+}
+
+.profession{
+    font-style: normal;
+    font-weight: bold;
+    color: #000;
+    margin: 0 0 20px 0;
+}
+
+.name {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 35px;
+    line-height: 45px;
+    color: #000;
+    margin: 0 0 25px 0;
+}
+
+.description {
+    width: 500px;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    color: #595959;
+}
+
+.main_title {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 27px;
+    color: #000;
+    margin-bottom: 10px;
+}
+
+.projects_list, .pst_wrk_list {
+    padding: 0 0 0 18px;
+}
+
+.des {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    margin: 0 0 0 5px;
+}
+
+.person, .projects, .education, .experience{
+    color: black;
+    margin: 0 0 40px 0;
+}
+
+.pst_wrk {
+    color: #FB6D3A;
+}
+
+.li{
+    font-size: 14px;
+    line-height: 24px;
+}
+
+.sidebar{
+    background-color: rgb(6, 18, 39);
+    color: #fff;
+    width: 450px;
+    padding: 16px 20px;
+}
+
+.contact, .tech, .soft, .lang{
+    margin: 50px 0px 0px 40px;
+}
+
+.sidebar_title {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 27px;
+}
+
+.contact_link {
+    margin-left: 5px;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    color: #565E6A;
+}
+
+.skills_list {
+    padding-left: 18px;
+
+}
+
+.skills_item {
+    color: #FB6D3A;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.skills_item_text {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    color: #fff;
+}
+
+
+    </style>
+</head>
+<body>
+    <!-- body of page -->
+    <div class="main_container">
+        <!--main section-->
+        <div class="main_context">
+            <!-- About person -->
+            <div class="person">
+                <h2 class="profession">{{profession}}</h2>
+                <h1 class="name">{{name_surname}}</h1>
+                <h4>{{country}}, {{city}}</h4>
+                <p class="description">{{description}}</p>
+            </div>
+            <!-- Projects -->
+            {%if projects %}
+                <div class="projects">
+                    <h3 class="main_title">Project</h3>
+                    <ol class="projects_list">
+                        {% for i in range(projects | length) %}
+                        <li class="li"><a class="des" href={{projects}}>{{projects[i]}}</a></li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            {% endif %}
+            <!-- Education-->
+            {%if education %}
+            <div class="education">
+                <h3 class="main_title">Education</h3>
+                {% for i in range( education | length) %}
+                <h4>{{education[i]}}</h4>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <!-- Work experience -->
+            {%if past_work %}
+            <div class="experience">
+                <h3 class="main_title">Work Experience</h3>
+                {% for i in range( past_work | length) %}
+                <div>
+                    <h4 class="pst_wrk">{{past_work[i]}}</h4>
+                    <p>{{how_long[i]}}</p>
+                    <ul class='pst_wrk_list'>
+                        <li class="li"> <span>{{job_description[i]}}</span></li>
+                    </ul>
+                    <hr>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <aside class="sidebar">
+            <!--Contact-->
+            <div class="contact">
+                <h3 class="sidebar_title">Contacts</h3>
+                <div>
+                    <span>Number:</span>
+                    <a class="contact_link" href="tel:{{phone_number}}">{{phone_number}}</a>
+                </div>
+                <div>
+                    <span>Email:</span>
+                    <a class="contact_link" href="mailto:{{email}}">{{email}}</a>
+                </div>
+            </div>
+            <!--Tech skills-->
+            {%if tech_skills %}
+            <div class="tech">
+                <h3 class="sidebar_title">Tech Skills</h3>
+                <ul class="skills_list">
+                    {% for i in range(tech_skills | length) %}
+                    <li class="skills_item"> <span class="skills_item_text">{{tech_skills[i]}}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {%endif%}
+            <!-- Soft Skills-->
+            {%if soft_skills %}
+            <div class="soft">
+                <h3 class="sidebar_title">Soft Skills</h3>
+                <ul class="skills_list">
+                    {% for i in range(soft_skills | length) %}
+                    <li class="skills_item"> <span class="skills_item_text">{{soft_skills[i]}}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {%endif%}
+            <!--Langauge-->
+            {%if lang %}
+            {%if lang_level %}
+            <div class="lang">
+                <h3 class="sidebar_title">Languages</h3>
+                <ul class="skills_list">
+                    {% for i in range(lang | length) %}
+                    <li class="skills_item"><p> <span class="skills_item_text">{{lang[i]}} - <span>{{lang_level[i]}}</span></span></p></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {%endif%}
+            {%endif%}
+        </aside>
+    </div>
+</body>
+</html>

@@ -1,5 +1,7 @@
-from flask import render_template, redirect, url_for, session as ses
-from Resumeaiogram.app.forms import LoginForm
+from io import BytesIO
+import requests
+from flask import render_template, redirect, url_for, session as ses, make_response, request
+from Resumeaiogram.app.forms import LoginForm, Download
 from Resumeaiogram.app import app
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -11,6 +13,64 @@ db = create_engine('postgresql://poop402r:3IC8RGJaHmQs@ep-bitter-paper-853686.eu
 Base = declarative_base()
 Session = sessionmaker(db)
 session = Session()
+
+
+@app.route('/generate_pdf', methods=['GET', 'POST'])
+def generate_pdf():
+    if request.method == 'POST':
+        form = Download()
+        right_tuple = ses['right_tuple']
+
+        # Получите данные для формирования PDF
+        name_surname = right_tuple["name_surname"]
+        phone_number = right_tuple["phone_number"]
+        email = right_tuple["email"]
+        education = right_tuple["education"]
+        lang = right_tuple["lang"]
+        lang_level = right_tuple["lang_level"]
+        country = right_tuple["country"]
+        city = right_tuple["city"]
+        description = right_tuple["description"]
+        profession = right_tuple["profession"]
+        soft_skills = right_tuple["soft_skills"]
+        tech_skills = right_tuple["tech_skills"]
+        projects = right_tuple["projects"]
+        how_long = right_tuple["how_long"]
+        job_description = right_tuple["job_description"]
+        past_work = right_tuple["past_work"]
+
+        html_content = render_template('download_file.html', profession=profession, name_surname=name_surname,
+                                       phone_number=phone_number, email=email, education=education,
+                                       tech_skills=tech_skills, soft_skills=soft_skills, projects=projects,
+                                       lang=lang, lang_level=lang_level, country=country, city=city,
+                                       past_work=past_work, how_long=how_long, job_description=job_description,
+                                       description=description, form=form)
+
+        # Конвертирование HTML в PDF с помощью PDFShift
+        pdfshift_api_key = '626843b335cd41388ff64c0c4bb36deb'
+        response = requests.post('https://api.pdfshift.io/v3/convert/pdf',
+                                 json={'source': html_content},
+                                 auth=('api', pdfshift_api_key),
+                                 )
+
+        # Проверка успешности конвертации
+        if response.status_code == 200:
+            # Получение PDF в байтовом формате
+            pdf_bytes = response.content
+
+            # Отправка PDF пользователю
+            pdf_file = BytesIO(pdf_bytes)
+            response = make_response(pdf_file.getvalue())
+            response.headers["Content-Type"] = "application/pdf"
+            response.headers["Content-Disposition"] = "attachment; filename=Resume.pdf"
+            return response
+        else:
+            # Обработка ошибки конвертации
+            return "Error occurred during PDF generation."
+
+    else:
+        # Обработка GET-запроса
+        return render_template('index.html')
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -57,6 +117,8 @@ def login():
 
 @app.route("/resume", methods=['GET', 'POST'])
 def resume():
+    print(0)
+    form = Download()
     if 'right_tuple' not in ses:
         return redirect(url_for('login'))
 
@@ -77,6 +139,9 @@ def resume():
     how_long = ''
     job_description = ''
     description = ''
+    if form.validate_on_submit():
+        right_tuple = ses['right_tuple']
+        return redirect(url_for('generate_pdf'))
 
     def portal():
         nonlocal name_surname, phone_number, email, education, tech_skills, soft_skills, projects, lang, lang_level, \
@@ -104,4 +169,6 @@ def resume():
                            email=email, education=education, tech_skills=tech_skills, soft_skills=soft_skills,
                            projects=projects, lang=lang, lang_level=lang_level, country=country, city=city,
                            past_work=past_work, how_long=how_long, job_description=job_description,
-                           description=description)
+                           description=description, form=form)
+
+

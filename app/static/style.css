@@ -123,3 +123,26 @@ body{
     color: #fff;
 }
 
+input[type="submit"] {
+    position: relative;
+    top: -20px;
+    left: 683px; /* Перемещение кнопки вправо на 20 пикселей */
+    transition: .5s;
+    border: none;
+    border-radius: 3px;
+    background-color: #ffffff;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    margin-top: 1rem;
+    color: #000000;
+}
+input[type=submit]:hover {
+    background-color: #FB6D3A;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    margin-top: 1rem;
+    color: #ffffff;
+}
+
