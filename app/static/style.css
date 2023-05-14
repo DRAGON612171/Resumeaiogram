@@ -122,11 +122,17 @@ body{
     line-height: 24px;
     color: #fff;
 }
-
+.image {
+    width: 350px;
+    margin: auto;
+    margin-left: 11px;
+    height: 400px;
+    object-fit: cover;
+}
 input[type="submit"] {
     position: relative;
     top: -20px;
-    left: 683px; /* Перемещение кнопки вправо на 20 пикселей */
+    left: 683px;
     transition: .5s;
     border: none;
     border-radius: 3px;

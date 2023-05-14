@@ -67,6 +67,12 @@
             {% endif %}
         </div>
         <aside class="sidebar">
+            <!--Photo-->
+                    {% if photo_data %}
+                        <div>
+                            <img src="data:image/jpeg;base64,{{ photo_data }}" alt=""  class="image"/>
+                        </div>
+                    {% endif %}
             <!-- Contact -->
             <div class="contact">
                 <h3 class="sidebar_title">Contacts</h3>
@@ -83,7 +89,7 @@
             {% if tech_skills %}
                 <div class="tech">
                 <h3 class="sidebar_title">Tech Skills</h3>
-                <ul class="skills_list">
+                    <ul class="skills_list">
                     {% for tech_skill in tech_skills %}
                     {% set tech_skill_no_quotes = tech_skill.strip("'") %}
                         <li class="skills_item"><span class="skills_item_text">{{ tech_skill_no_quotes }}</span></li>
@@ -102,7 +108,7 @@
                 {% endfor %}
                 </ul>
                 </div>
-            {% endif %}
+                    {% endif %}
             <!-- Languages -->
             {% if lang and lang_level %}
                 <div class="lang">

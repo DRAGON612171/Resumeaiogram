@@ -26,7 +26,10 @@ changes = InlineKeyboardMarkup(
              InlineKeyboardButton(text='😃Імя та прізвище😃', callback_data='name_surname')
             ],
             [
-                InlineKeyboardButton(text='☎Номер телефону☎️', callback_data='phone')
+             InlineKeyboardButton(text='🙉Фото🙉', callback_data='image')
+            ],
+            [
+                InlineKeyboardButton(text='☎Номер телефону☎', callback_data='phone')
             ],
             [
                 InlineKeyboardButton(text='📧Email📧', callback_data='email')
@@ -98,6 +101,15 @@ work_pass = ReplyKeyboardMarkup(
         [
           KeyboardButton(text='Stop'),
           KeyboardButton(text='Немає досвіду роботи')
+        ]
+    ],
+    resize_keyboard=True
+)
+
+image = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+          KeyboardButton(text='Не хочу додавати фото'),
         ]
     ],
     resize_keyboard=True

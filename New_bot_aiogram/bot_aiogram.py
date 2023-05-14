@@ -1,5 +1,7 @@
 import random
 import string
+from io import BytesIO
+from PIL import Image
 from aiogram import types, Dispatcher, Bot
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -7,7 +9,7 @@ from Resumeaiogram import config
 from admins_notify import notify_admins
 from Resumeaiogram.database.SQLAlchemy_connection import session, ResumeBot
 from steps import Steps
-from keyboards import but_create, end_keyboard, changes, lists, confirm, work_pass
+from keyboards import but_create, end_keyboard, changes, lists, confirm, work_pass, image
 from aiogram.dispatcher import FSMContext
 
 bot = Bot(token=config.Token)
@@ -23,6 +25,7 @@ async def instruction(message: types.Message,state: FSMContext):
                                             'Пропонуємо спочатку передивитися приклад заповнення: /example')
     await state.finish()
 
+
 @dp.message_handler(commands=['example'], state='*')
 async def example(message: types.Message,state: FSMContext):
     photo = open('resume_example.jpg', 'rb')
@@ -35,7 +38,6 @@ async def example(message: types.Message,state: FSMContext):
 async def clear(message: types.Message,state: FSMContext):
     await bot.send_message(message.chat.id, 'Ви впевнені, що хочете видалити всі данні?', reply_markup=confirm)
     await state.finish()
-
 
 
 @dp.message_handler(commands=['website'], state='*')
@@ -91,10 +93,42 @@ async def name_surname(message: types.Message):
         existing_user.update_info(name_surname=message.text)
         session.commit()
         print('name_surname {}'.format(message.text))
-        await Steps.phone_number.set()
-        await message.answer('Напишіть ваш номер телефону')
+        await Steps.get_image.set()
+        await message.answer('Прикріпіть своє фото', reply_markup=image)
     except :
         await message.answer('Виникла помилка')
+
+
+@dp.message_handler(content_types=['photo', 'text'], state=Steps.get_image)
+async def get_image(message: types.Message):
+    try:
+        if message.text == 'Не хочу додавати фото':
+            await bot.send_message(message.chat.id, 'Напишіть ваш номер телефону')
+            await Steps.phone_number.set()
+        else:
+            existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
+            photo = message.photo[-1]
+            file = await photo.get_file()
+
+            # Преобразование изображения в байты
+            image_bytes = BytesIO()
+            await file.download(destination_file=image_bytes)
+            image_bytes.seek(0)
+
+            # Открытие изображения с использованием Pillow
+            image = Image.open(image_bytes)
+
+            # Преобразование изображения обратно в байты
+            image_bytes = BytesIO()
+            image.save(image_bytes, format='JPEG')
+            image_bytes.seek(0)
+
+            existing_user.update_info(image=image_bytes.read())
+            session.commit()
+            await bot.send_message(message.chat.id, 'Напишіть ваш номер телефону', reply_markup=types.ReplyKeyboardRemove())
+            await Steps.phone_number.set()
+    except:
+        await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
 @dp.message_handler(content_types=['text'], state=Steps.phone_number)
@@ -192,7 +226,7 @@ async def get_lang(message: types.Message):
             session.commit()
             print('lang{}'.format(message.text))
             await Steps.get_lang_level.set()
-            await message.answer('Напишіть рівень мови🔴', reply_markup=lists)
+            await message.answer('Напишіть рівень мови🔴', reply_markup=types.ReplyKeyboardRemove())
     except :
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -213,7 +247,7 @@ async def get_lang_level(message: types.Message):
             existing_user.update_info(lang_level=new)
             session.commit()
             await Steps.get_lang.set()
-            await message.answer('Напишіть яку ви знаєте мову')
+            await message.answer('Напишіть яку ви знаєте мову', reply_markup=lists)
     except :
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -276,7 +310,7 @@ async def get_work_experience(message: types.Message):
     new = []
     try:
         if message.text.lower() == 'stop' or message.text.lower() == 'немає досвіду роботи':
-            await bot.send_message(message.chat.id, '😎Ваше резюме готове, перевірте свої дані:😎')
+            await bot.send_message(message.chat.id, '😎Ваше резюме готове, перевірте свої дані:😎', reply_markup=types.ReplyKeyboardRemove())
             await end_message(message)
         else:
             if existing_user.past_work == None:
@@ -381,12 +415,15 @@ async def bot_changes(callback: types.callback_query):
                                                       "Ваші дані для входу:\n"
                                                       f"ID = {resume.id}\n"
                                                       f"PASSWORD = {resume.password}")
-        #Додати посилання на сайт
         await bot.send_message(callback.from_user.id, "http://goiteens2.pythonanywhere.com/")
 
     if callback.data == 'name_surname':
         await bot.send_message(callback.from_user.id, "Нове нове прізвище та ім'я")
         await Steps.name_surname_edit.set()
+
+    elif callback.data == 'image':
+        await bot.send_message(callback.from_user.id, "Відправляйте нову фотку")
+        await Steps.image_edit.set()
 
     if callback.data == 'phone':
         await bot.send_message(callback.from_user.id, "Введіть новий номер телефону")
@@ -457,6 +494,34 @@ async def edit_name_surname(message: types.Message):
         await bot.send_message(message.chat.id, 'Ваші дані оновлено')
         await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
     except :
+        await bot.send_message(message.chat.id, 'Виникла помилка')
+
+
+@dp.message_handler(content_types=['photo'], state=Steps.image_edit)
+async def image_edit(message: types.Message):
+    try:
+        existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
+        photo = message.photo[-1]
+        file = await photo.get_file()
+
+        # Преобразование изображения в байты
+        image_bytes = BytesIO()
+        await file.download(destination_file=image_bytes)
+        image_bytes.seek(0)
+
+        # Открытие изображения с использованием Pillow
+        image = Image.open(image_bytes)
+
+        # Преобразование изображения обратно в байты
+        image_bytes = BytesIO()
+        image.save(image_bytes, format='JPEG')
+        image_bytes.seek(0)
+
+        existing_user.update_info(image=image_bytes.read())
+        session.commit()
+        await bot.send_message(message.chat.id, 'Ваші дані оновлено')
+        await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
+    except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 

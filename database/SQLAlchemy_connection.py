@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, ARRAY, select
+from sqlalchemy import create_engine, Column, Integer, String, ARRAY, select, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -13,7 +13,7 @@ session = Session()
 
 
 class ResumeBot(Base):
-    __tablename__ = 'resume_bot'
+    __tablename__ = 'resume_bot4'
     id = Column(Integer, primary_key=True)
     name_surname = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)
@@ -32,10 +32,12 @@ class ResumeBot(Base):
     job_description = Column(ARRAY(String), nullable=True)
     past_work = Column(ARRAY(String), nullable=True)
     password = Column(String, nullable=True)
+    image = Column(LargeBinary)
 
     def update_info(self, id=None, name_surname=None, email=None, phone_number=None, education=None, lang=None,
                     lang_level=None, country=None, city=None, description=None, profession=None, soft_skills=None,
-                    tech_skills=None, projects=None, how_long=None, job_description=None, past_work=None, password=None):
+                    tech_skills=None, projects=None, how_long=None, job_description=None, past_work=None, password=None,
+                    image=None):
         if id:
             self.id = id
         elif name_surname:
@@ -72,6 +74,8 @@ class ResumeBot(Base):
             self.job_description = job_description
         elif past_work:
             self.past_work = past_work
+        if image:
+            self.image = image
 
 
 if __name__ == '__main__':
@@ -82,6 +86,6 @@ if __name__ == '__main__':
     resumes = session.query(ResumeBot).all()
     print(type(resumes))
     for resume in resumes:
-        print(resume.id, resume.name_surname, resume.phone_number, resume.email, resume.education, resume.lang, resume.lang_level, resume.country, resume.city, resume.description, resume.past_work, resume.profession, resume.soft_skills, resume.tech_skills, resume.projects, resume.how_long, resume.job_description, resume.past_work, resume.password)
+        print(resume.id, resume.image)
 
     print('finish')
