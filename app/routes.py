@@ -1,21 +1,17 @@
-from io import BytesIO
-import requests
 from flask import render_template, redirect, url_for, session as ses, make_response, request
 from Resumeaiogram.app.forms import LoginForm, Download
 from Resumeaiogram.app import app
 from Resumeaiogram.database.SQLAlchemy_connection import ResumeBot
 import base64
 from Resumeaiogram.database.SQLAlchemy_connection import session
+import pdfkit
 
 
 @app.route('/generate_pdf', methods=['GET', 'POST'])
 def generate_pdf():
     if request.method == 'POST':
-        form = Download()
         right_tuple = ses['right_tuple']
         user = session.query(ResumeBot).filter_by(id=right_tuple["id"]).first()
-
-        # Получите данные для формирования PDF
         name_surname = user.name_surname
         phone_number = user.phone_number
         email = user.email
@@ -33,36 +29,21 @@ def generate_pdf():
         job_description = user.job_description
         past_work = user.past_work
         image = user.image
-        photo_data = base64.b64encode(image).decode('utf-8')
-
+        photo_data = ''
+        if image is not None:
+            photo_data = base64.b64encode(image).decode('utf-8')
         html_content = render_template('download_file.html', profession=profession, name_surname=name_surname,
-                                       phone_number=phone_number, email=email, education=education,
-                                       tech_skills=tech_skills, soft_skills=soft_skills, projects=projects,
-                                       lang=lang, lang_level=lang_level, country=country, city=city,
-                                       past_work=past_work, how_long=how_long, job_description=job_description,
-                                       description=description, photo_data=photo_data, form=form)
+                                      phone_number=phone_number, email=email, education=education,
+                                      tech_skills=tech_skills, soft_skills=soft_skills, projects=projects,
+                                      lang=lang, lang_level=lang_level, country=country, city=city,
+                                      past_work=past_work, how_long=how_long, job_description=job_description,
+                                      description=description, photo_data=photo_data)
 
-        # Конвертирование HTML в PDF с помощью PDFShift
-        pdfshift_api_key = 'f314774101cd4e3abba674461a5f8107'
-        response = requests.post('https://api.pdfshift.io/v3/convert/pdf',
-                                 json={'source': html_content},
-                                 auth=('api', pdfshift_api_key),
-                                 )
-
-        # Проверка успешности конвертации
-        if response.status_code == 200:
-            # Получение PDF в байтовом формате
-            pdf_bytes = response.content
-
-            # Отправка PDF пользователю
-            pdf_file = BytesIO(pdf_bytes)
-            response = make_response(pdf_file.getvalue())
-            response.headers["Content-Type"] = "application/pdf"
-            response.headers["Content-Disposition"] = "attachment; filename=Resume.pdf"
-            return response
-        else:
-            # Обработка ошибки конвертации
-            return "Error occurred during PDF generation."
+        pdf = pdfkit.from_string(html_content, False)
+        response = make_response(pdf)
+        response.headers["Content-Type"] = "application/pdf"
+        response.headers["Content-Disposition"] = "attachment; filename=Resume.pdf"
+        return response
 
     else:
         # Обработка GET-запроса
@@ -120,7 +101,9 @@ def resume():
     job_description = user.job_description
     past_work = user.past_work
     image = user.image
-    photo_data = base64.b64encode(image).decode('utf-8')
+    photo_data = ''
+    if image is not None:
+            photo_data = base64.b64encode(image).decode('utf-8')
     if form.validate_on_submit():
         ses['right_tuple'] = right_tuple
         return redirect(url_for('generate_pdf'))

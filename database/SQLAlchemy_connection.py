@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, ARRAY, select, LargeBinary
+from sqlalchemy import create_engine, Column, Integer, String, ARRAY, select, LargeBinary, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -7,14 +7,13 @@ from Resumeaiogram import config
 db = create_engine(url=config.Database_URL)
 Base = declarative_base()
 
-
 Session = sessionmaker(db)
 session = Session()
 
 
 class ResumeBot(Base):
-    __tablename__ = 'resume_bot4'
-    id = Column(Integer, primary_key=True)
+    __tablename__ = 'resume_bot5'
+    id = Column(BigInteger, primary_key=True)
     name_surname = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)
     email = Column(String, nullable=True)

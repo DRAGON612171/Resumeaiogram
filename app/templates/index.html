@@ -69,7 +69,7 @@
         <aside class="sidebar">
             <!--Photo-->
                     {% if photo_data %}
-                        <div>
+                        <div style="display: flex; justify-content: center;">
                             <img src="data:image/jpeg;base64,{{ photo_data }}" alt=""  class="image"/>
                         </div>
                     {% endif %}
@@ -127,7 +127,7 @@
         </aside>
         </div>
         <form action="/generate_pdf" method="post">
-        <p>{{ form.submit() }}</p>
+        <p class="download-form">{{ form.submit() }}</p>
         </form>
     </body>
 </html>

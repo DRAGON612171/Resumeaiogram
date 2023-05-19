@@ -11,20 +11,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
 
-    <style>
+<style>
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body{
-    background-size: cover;
     font-family: 'Montserrat', sans-serif;
 }
 
 .main_container{
+    border: 1px solid black;
     display: flex;
     width: 1200px;
     background-color: #fff;
-    margin: 40px auto;
-    margin-top:-10px;
+    justify-content: space-between;
 }
 
 .main_context{
@@ -140,8 +144,6 @@ body{
 }
 .image {
     width: 350px;
-    margin: auto;
-    margin-left: 11px;
     height: 400px;
     object-fit: cover;
 }
@@ -205,7 +207,7 @@ body{
         <aside class="sidebar">
             <!--Photo-->
                     {% if photo_data %}
-                        <div>
+                        <div style="display: flex; justify-content: center;">
                             <img src="data:image/jpeg;base64,{{ photo_data }}" alt=""  class="image"/>
                         </div>
                     {% endif %}

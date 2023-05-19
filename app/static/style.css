@@ -1,3 +1,9 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 
 body{
     background: url(./photo4.jpg)no-repeat center center fixed;
@@ -124,15 +130,10 @@ body{
 }
 .image {
     width: 350px;
-    margin: auto;
-    margin-left: 11px;
     height: 400px;
     object-fit: cover;
 }
 input[type="submit"] {
-    position: relative;
-    top: -20px;
-    left: 683px;
     transition: .5s;
     border: none;
     border-radius: 3px;
@@ -150,5 +151,9 @@ input[type=submit]:hover {
     font-size: 1rem;
     margin-top: 1rem;
     color: #ffffff;
+}
+.download-form {
+    display: flex;
+    justify-content: center;
 }
 
