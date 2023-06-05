@@ -3,6 +3,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 
 class Steps(StatesGroup):
     name_surname = State()
+    get_image = State()
     phone_number = State()
     get_email = State()
     get_education = State()
@@ -20,6 +21,7 @@ class Steps(StatesGroup):
     get_how_long = State()
     end_message = State()
     name_surname_edit = State()
+    image_edit = State()
     phone_number_edit = State()
     email_edit = State()
     education_edit = State()
