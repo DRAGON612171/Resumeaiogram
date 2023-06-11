@@ -18,12 +18,12 @@ import validators
 
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot(token=config.Token)
+bot = Bot(token=config.Token, parse_mode='HTML')
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
 @dp.message_handler(commands=['instruction'], state='*')
-async def instruction(message: types.Message,state: FSMContext):
+async def instruction(message: types.Message, state: FSMContext):
     await bot.send_message(message.chat.id, 'Всі дані слід записувати через кому, а коли побачите "🔴",'
                                             'то треба вводити свої данні по одному, тобто один пункт'
                                             ' в одному повідомленні.\n'
@@ -33,7 +33,7 @@ async def instruction(message: types.Message,state: FSMContext):
 
 @dp.message_handler(commands=['example'], state='*')
 async def example(message: types.Message,state: FSMContext):
-    photo = open('/home/goiteens2/Resumeaiogram/New_bot_aiogram/resume_example.jpg', 'rb')
+    photo = open('resume_example.jpg', 'rb')
     await bot.send_message(message.chat.id, 'Ось приклад заповнення резюме:')
     await bot.send_photo(message.chat.id, photo=photo)
     await state.finish()
@@ -46,7 +46,7 @@ async def clear(message: types.Message,state: FSMContext):
 
 
 @dp.message_handler(commands=['website'], state='*')
-async def website(message: types.Message,state: FSMContext):
+async def website(message: types.Message, state: FSMContext):
     resumes = session.query(ResumeBot).filter_by(id=message.chat.id).all()
     for resume in resumes:
         await bot.send_message(message.chat.id, f"Ваші дані для входу:\n"
@@ -59,9 +59,11 @@ async def website(message: types.Message,state: FSMContext):
 @dp.message_handler(commands=['start'], state='*')
 async def start(message: types.Message, state: FSMContext):
     print(message)
+    session.query(ResumeBot).filter_by(id=message.chat.id).delete()
+    session.commit()
     await bot.send_message(message.from_user.id, '👋Привіт, {}!👋\n'
                                             'Це бот для створення резюме, думаю тобі сподобається😃 \n'
-                                            'Якщо ви вперше складаєте резюме, то краще спочатку ознайомтеся як це зробити: \n'
+                                            "Якщо ви вперше складаєте резюме, то краще спочатку ознайомтеся як це зробити: \n"
                                             '/instruction \n'
                                             '/example\n'
                                             'Якщо бажаєте видалити минулі дані, то використайте команду /clear'.format(message.from_user.first_name), reply_markup=but_create)
@@ -137,7 +139,7 @@ async def get_image(message: types.Message):
             await bot.send_message(message.chat.id, 'Напишіть ваш номер телефону', reply_markup=types.ReplyKeyboardRemove())
             await Steps.phone_number.set()
         elif message.text != 'Не хочу додавати фото' or message.text.isdigit():
-            await bot.send_message(message.chat.id, 'Що ви намагєтесь зробити?🧐')
+            await bot.send_message(message.chat.id, 'Що ви намагаєтесь зробити?🧐')
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -241,7 +243,7 @@ async def get_projects(message: types.Message):
                 await Steps.get_lang.set()
                 await message.answer('Напишіть яку ви знаєте мову🔴(одна мова в одному повідомленні)',reply_markup=types.ReplyKeyboardRemove())
             else:
-                await bot.send_message(message.chat.id, "Якесь посилання недійсне, перевірте їх ретельно")
+                await bot.send_message(message.chat.id, "Якесь із посилань недійсне, перевірте їх ретельно")
     except Exception as e:
         print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
@@ -253,7 +255,7 @@ async def get_lang(message: types.Message):
         if message.text.isdigit() or re.search(r"[^\w`'' '-.]", message.text,re.IGNORECASE):
             await bot.send_message(message.chat.id, 'Дані введені некоректно')
         else:
-            if message.text.lower() == 'stop':
+            if message.text == 'Продовжити складання резюме':
                 await Steps.get_country.set()
                 await message.answer('З якої ви країни?',reply_markup=types.ReplyKeyboardRemove())
             else:
@@ -343,7 +345,7 @@ async def get_profession(message: types.Message):
 @dp.message_handler(state=Steps.get_description)
 async def get_description(message: types.Message):
     try:
-        if message.text.isdigit() or re.search(r"[^\w`'' ']", message.text,re.IGNORECASE):
+        if message.text.isdigit() or re.search(r"[^\w`'' '1-9,]", message.text,re.IGNORECASE):
             await bot.send_message(message.chat.id, 'Дані введені некоректно')
         else:
             existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
@@ -364,7 +366,7 @@ async def get_work_experience(message: types.Message):
         if message.text.isdigit() or re.search(r"[^\w`'' ']", message.text):
             await bot.send_message(message.chat.id, 'Дані введені некоректно')
         else:
-            if message.text.lower() == 'stop' or message.text.lower() == 'немає досвіду роботи':
+            if message.text.lower() == 'Продовжити складання резюме' or message.text.lower() == 'немає досвіду роботи':
                 await bot.send_message(message.chat.id, '😎Ваше резюме готове, перевірте чи все правильно:', reply_markup=types.ReplyKeyboardRemove())
                 await end_message(message)
             else:
@@ -439,22 +441,22 @@ async def get_how_long(message: types.Message):
 async def end_message(message):
     resumes = session.query(ResumeBot).filter_by(id=message.chat.id).all()
     for resume in resumes:
-        await bot.send_message(message.chat.id, f"Ім'я та прізивще: {resume.name_surname}\n"
-                                                f"Номер телефону: {resume.phone_number}\n"
-                                                f"Електронна пошта: {resume.email}\n"
-                                                f"Освіта: {','.join(resume.education) if resume.education else ''}\n"
-                                                f"Tech Навички: {','.join(resume.tech_skills) if resume.tech_skills else ''}\n"
-                                                f"Soft Навички: {','.join(resume.soft_skills) if resume.soft_skills else ''}\n"
-                                                f"Посилання на ваші проекти: {' , '.join(resume.projects) if resume.projects else ''}\n"
-                                                f"Мови: {','.join(resume.lang) if resume.lang else ''}\n"
-                                                f"Рівень знання цих мов: {','.join(resume.lang_level) if resume.lang_level else ''}\n"
-                                                f"Ваша країна: {resume.country}\n"
-                                                f"Ваше місто: {resume.city}\n"
-                                                f"Посада на яку претендуєте: {resume.profession}\n"
-                                                f"Ваші очікування від роботи: {resume.description}\n"
-                                                f"Досвід роботи: {','.join(resume.past_work) if resume.past_work else ''}\n"
-                                                f"Що ви робили на минулій посаді: {','.join(resume.job_description) if resume.job_description else ''}\n"
-                                                f"Скільки часу ви займали цю посаду: {','.join(resume.how_long) if resume.how_long else ''}\n"
+        await bot.send_message(message.chat.id, f"<b>Ім'я та прізивще: </b>{resume.name_surname}\n"
+                                                f"<b>Номер телефону: </b> {resume.phone_number}\n"
+                                                f"<b>Електронна пошта: </b> {resume.email}\n"
+                                                f"<b>Освіта: </b> {','.join(resume.education) if resume.education else ''}\n"
+                                                f"<b>Tech Навички: </b> {','.join(resume.tech_skills) if resume.tech_skills else ''}\n"
+                                                f"<b>Soft Навички: </b> {','.join(resume.soft_skills) if resume.soft_skills else ''}\n"
+                                                f"<b>Посилання на ваші проекти: </b> {' , '.join(resume.projects) if resume.projects else ''}\n"
+                                                f"<b>Мови: </b> {','.join(resume.lang) if resume.lang else ''}\n"
+                                                f"<b>Рівень знання цих мов: </b> {','.join(resume.lang_level) if resume.lang_level else ''}\n"
+                                                f"<b>Ваша країна: </b> {resume.country}\n"
+                                                f"<b>Ваше місто: </b> {resume.city}\n"
+                                                f"<b>Посада на яку претендуєте: </b> {resume.profession}\n"
+                                                f"<b>Ваші очікування від роботи: </b> {resume.description}\n"
+                                                f"<b>Досвід роботи: </b> {','.join(resume.past_work) if resume.past_work else ''}\n"
+                                                f"<b>Що ви робили на минулій посаді: </b> {','.join(resume.job_description) if resume.job_description else ''}\n"
+                                                f"<b>Скільки часу ви займали цю посаду: </b> {','.join(resume.how_long) if resume.how_long else ''}\n"
                                                 "\n"
                                                 "Чи хочете відредагувати свої дані?\n", reply_markup=end_keyboard)
 
@@ -767,7 +769,7 @@ async def edit_profession(message: types.Message):
 @dp.message_handler(state=Steps.description_edit)
 async def edit_description(message: types.Message):
     try:
-        if message.text.isdigit() or re.search(r"[^\w`'' ']", message.text,re.IGNORECASE):
+        if message.text.isdigit() or re.search(r"[^\w`'' '1-9,]", message.text,re.IGNORECASE):
             await bot.send_message(message.chat.id, 'Дані введені некоректно')
         else:
             existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()

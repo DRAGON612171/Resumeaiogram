@@ -73,7 +73,7 @@ changes = InlineKeyboardMarkup(
 lists = ReplyKeyboardMarkup(
     keyboard=[
         [
-          KeyboardButton(text='Stop')
+          KeyboardButton(text='Продовжити складання резюме')
         ]
     ],
     resize_keyboard=True
@@ -91,7 +91,6 @@ confirm = InlineKeyboardMarkup(
 work_pass = ReplyKeyboardMarkup(
     keyboard=[
         [
-          KeyboardButton(text='Stop'),
           KeyboardButton(text='Немає досвіду роботи')
         ]
     ],
