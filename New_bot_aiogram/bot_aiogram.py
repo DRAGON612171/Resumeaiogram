@@ -24,16 +24,16 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 
 @dp.message_handler(commands=['instruction'], state='*')
 async def instruction(message: types.Message,state: FSMContext):
-    await bot.send_message(message.chat.id, 'Всі дані слід записувати через кому, а коли побачите "🔴",'
-                                            'то треба вводити свої данні по одному, тобто один пункт'
+    await bot.send_message(message.chat.id, 'Всі дані слід записувати через кому, тільки в деяких повідемленнях буде'
+                                            ' вказано, що свої дані потрібно вводити по одному, тобто один пункт'
                                             ' в одному повідомленні.\n'
-                                            'Пропонуємо передивитися приклад заповнення: /example')
+                                            'Пропонуємо переглянути приклад заповнення: /example')
     await state.finish()
 
 
 @dp.message_handler(commands=['example'], state='*')
 async def example(message: types.Message,state: FSMContext):
-    photo = open('/home/goiteens2/Resumeaiogram/New_bot_aiogram/resume_example.jpg', 'rb')
+    photo = open('resume_example.jpg', 'rb')
     await bot.send_message(message.chat.id, 'Ось приклад заповнення резюме:')
     await bot.send_photo(message.chat.id, photo=photo)
     await state.finish()
@@ -58,6 +58,8 @@ async def website(message: types.Message,state: FSMContext):
 
 @dp.message_handler(commands=['start'], state='*')
 async def start(message: types.Message, state: FSMContext):
+    session.query(ResumeBot).filter_by(id=message.chat.id).delete()
+    session.commit()
     print(message)
     await bot.send_message(message.from_user.id, '👋Привіт, {}!👋\n'
                                             'Це бот для створення резюме, думаю тобі сподобається😃 \n'
@@ -137,7 +139,7 @@ async def get_image(message: types.Message):
             await bot.send_message(message.chat.id, 'Напишіть ваш номер телефону', reply_markup=types.ReplyKeyboardRemove())
             await Steps.phone_number.set()
         elif message.text != 'Не хочу додавати фото' or message.text.isdigit():
-            await bot.send_message(message.chat.id, 'Що ви намагєтесь зробити?🧐')
+            await bot.send_message(message.chat.id, 'Що ви намагаєтесь зробити?🧐')
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -168,7 +170,7 @@ async def get_email(message: types.Message):
             session.commit()
             print('email {}'.format(message.text))
             await Steps.get_education.set()
-            await message.answer('Вкажіть всі пройдені вами курси, отримані дипломи та рівень вашої освіти (через кому)')
+            await message.answer('Вкажіть рівень вашої освіти, також можете вказати отримані дипломи та курси, пройдені вами(через кому)')
     except EmailNotValidError:
         await bot.send_message(message.chat.id, 'Введений email недійсний')
     except Exception as e:
@@ -186,7 +188,7 @@ async def get_education(message: types.Message):
             existing_user.update_info(education=list(filter(None, re.split(r"[^\w`']", message.text,re.IGNORECASE))))
             session.commit()
             print('get_education {}'.format(message.text))
-            await message.answer('Напишіть ваші Tech Skills(через кому)')
+            await message.answer('Вкажіть ваші Tech Skills(через кому)')
             await Steps.get_tech_skills.set()
     except :
         await bot.send_message(message.chat.id, 'Виникла помилка')
@@ -203,7 +205,7 @@ async def get_tech_skills(message: types.Message):
             session.commit()
             print('tech skills {}'.format(message.text))
             await Steps.get_soft_skills.set()
-            await message.answer('Напишіть ваші Soft Skills(через кому)')
+            await message.answer('Вкажіть ваші Soft Skills(через кому)')
     except Exception as e:
         print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
@@ -231,7 +233,7 @@ async def get_projects(message: types.Message):
     try:
         if message.text == 'У мене немає своїх проектів':
             await Steps.get_lang.set()
-            await message.answer('Напишіть яку ви знаєте мову🔴(одна мова в одному повідомленні)',reply_markup=types.ReplyKeyboardRemove())
+            await message.answer('Вкажіть мову, яку ви знаєте(одна мова в одному повідомленні)',reply_markup=types.ReplyKeyboardRemove())
         else:
             if all(validators.url(message.text) for element in message.text.split(',')):
                 existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
@@ -239,9 +241,9 @@ async def get_projects(message: types.Message):
                 session.commit()
                 print('projects {}'.format(message.text))
                 await Steps.get_lang.set()
-                await message.answer('Напишіть яку ви знаєте мову🔴(одна мова в одному повідомленні)',reply_markup=types.ReplyKeyboardRemove())
+                await message.answer('Вкажіть мову, яку ви знаєте(одна мова в одному повідомленні)',reply_markup=types.ReplyKeyboardRemove())
             else:
-                await bot.send_message(message.chat.id, "Якесь посилання недійсне, перевірте їх ретельно")
+                await bot.send_message(message.chat.id, "Якесь із посилань недійсне, перевірте їх ретельно")
     except Exception as e:
         print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
@@ -253,9 +255,9 @@ async def get_lang(message: types.Message):
         if message.text.isdigit() or re.search(r"[^\w`'' '-.]", message.text,re.IGNORECASE):
             await bot.send_message(message.chat.id, 'Дані введені некоректно')
         else:
-            if message.text.lower() == 'stop':
+            if message.text == 'Продовжити складання резюме':
                 await Steps.get_country.set()
-                await message.answer('З якої ви країни?',reply_markup=types.ReplyKeyboardRemove())
+                await message.answer('Вкажіть з якої ви країни?',reply_markup=types.ReplyKeyboardRemove())
             else:
                 existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
                 new = []
@@ -267,7 +269,7 @@ async def get_lang(message: types.Message):
                 session.commit()
                 print('lang{}'.format(message.text))
                 await Steps.get_lang_level.set()
-                await message.answer('Напишіть рівень мови🔴', reply_markup=types.ReplyKeyboardRemove())
+                await message.answer('Вкажіть рівень цієї мови', reply_markup=types.ReplyKeyboardRemove())
     except :
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -287,7 +289,7 @@ async def get_lang_level(message: types.Message):
             existing_user.update_info(lang_level=new)
             session.commit()
             await Steps.get_lang.set()
-            await message.answer('Напишіть наступну мову🔴', reply_markup=lists)
+            await message.answer('Вкажіть наступну мову, яку ви знаєте(одна мова в одному повідомленні)', reply_markup=lists)
     except :
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -303,7 +305,7 @@ async def get_country(message: types.Message):
             session.commit()
             print('country {}'.format(message.text))
             await Steps.get_city.set()
-            await message.answer('З якого ви міста?')
+            await message.answer('Вкажіть з якого ви міста?')
     except :
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -335,7 +337,7 @@ async def get_profession(message: types.Message):
             session.commit()
             print('profession {}'.format(message.text))
             await Steps.get_description.set()
-            await message.answer('Напишіть ваші очікування від роботи(можете розповісти щось про себе')
+            await message.answer('Напишіть ваші очікування від роботи(можете розповісти щось про себе)')
     except :
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -343,7 +345,7 @@ async def get_profession(message: types.Message):
 @dp.message_handler(state=Steps.get_description)
 async def get_description(message: types.Message):
     try:
-        if message.text.isdigit() or re.search(r"[^\w`'' ']", message.text,re.IGNORECASE):
+        if message.text.isdigit() or re.search(r"[^\w`'' '1-9]", message.text, re.IGNORECASE):
             await bot.send_message(message.chat.id, 'Дані введені некоректно')
         else:
             existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
@@ -351,8 +353,8 @@ async def get_description(message: types.Message):
             session.commit()
             print('description {}'.format(message.text))
             await Steps.get_work_experience.set()
-            await message.answer('Напишіть про ваш минулий досвід роботи(посада)🔴',reply_markup=work_pass)
-    except :
+            await message.answer('Вкажіть вашу минулу посаду(тільки одну)', reply_markup=work_pass)
+    except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
 
@@ -361,10 +363,10 @@ async def get_work_experience(message: types.Message):
     existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
     new = []
     try:
-        if message.text.isdigit() or re.search(r"[^\w`'' ']", message.text):
+        if message.text.isdigit() or re.search(r"[^\w`'' ']", message.text,re.IGNORECASE):
             await bot.send_message(message.chat.id, 'Дані введені некоректно')
         else:
-            if message.text.lower() == 'stop' or message.text.lower() == 'немає досвіду роботи':
+            if message.text == 'Немає досвіду роботи' or message.text == 'Продовжити складання резюме':
                 await bot.send_message(message.chat.id, '😎Ваше резюме готове, перевірте чи все правильно:', reply_markup=types.ReplyKeyboardRemove())
                 await end_message(message)
             else:
@@ -380,7 +382,7 @@ async def get_work_experience(message: types.Message):
                     session.commit()
                 print('get_work_experience {}'.format(message.text))
                 await Steps.get_job_description.set()
-                await message.answer("Напишіть ваші обов'язки на минулій роботі🔴", reply_markup=types.ReplyKeyboardRemove())
+                await message.answer("Напишіть про ваші обов'язки на минулій роботі", reply_markup=types.ReplyKeyboardRemove())
     except Exception as e:
         print(e)
         await bot.send_message(message.chat.id, 'Виникла помилка')
@@ -391,7 +393,7 @@ async def get_job_description(message: types.Message):
     existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
     new = []
     try:
-        if message.text.isdigit() or re.search(r"[^\w`'' ']", message.text):
+        if message.text.isdigit() or re.search(r"[^\w`'' '1-9]", message.text, re.IGNORECASE):
             await bot.send_message(message.chat.id, 'Дані введені некоректно')
         else:
             if existing_user.job_description == None:
@@ -406,7 +408,7 @@ async def get_job_description(message: types.Message):
                 session.commit()
             print('get_job_description {}'.format(message.text))
             await Steps.get_how_long.set()
-            await message.answer('Протягом якого часу ви займали цю посаду?🔴')
+            await message.answer('Вкажіть як довго ви займали цю посаду?')
     except :
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -416,7 +418,7 @@ async def get_how_long(message: types.Message):
     existing_user = session.query(ResumeBot).filter_by(id=message.chat.id).first()
     new = []
     try:
-        if message.text.isdigit() or re.search(r"[^\w0-9`'' ']", message.text):
+        if re.search(r"[^\w0-9`'' ']", message.text):
             await bot.send_message(message.chat.id, 'Дані введені некоректно')
         else:
             if existing_user.how_long == None:
@@ -431,7 +433,7 @@ async def get_how_long(message: types.Message):
                 session.commit()
             print('get_how_long {}'.format(message.text))
             await Steps.get_work_experience.set()
-            await message.answer('Напишіть наступний досвід роботи(посада)🔴', reply_markup=lists)
+            await message.answer('Вкажіть наступний досвід роботи(посаду)', reply_markup=lists)
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
@@ -439,12 +441,12 @@ async def get_how_long(message: types.Message):
 async def end_message(message):
     resumes = session.query(ResumeBot).filter_by(id=message.chat.id).all()
     for resume in resumes:
-        await bot.send_message(message.chat.id, f"Ім'я та прізивще: {resume.name_surname}\n"
+        await bot.send_message(message.chat.id, f"Ім'я та прізвище: {resume.name_surname}\n"
                                                 f"Номер телефону: {resume.phone_number}\n"
                                                 f"Електронна пошта: {resume.email}\n"
                                                 f"Освіта: {','.join(resume.education) if resume.education else ''}\n"
-                                                f"Tech Навички: {','.join(resume.tech_skills) if resume.tech_skills else ''}\n"
-                                                f"Soft Навички: {','.join(resume.soft_skills) if resume.soft_skills else ''}\n"
+                                                f"Tech навички: {','.join(resume.tech_skills) if resume.tech_skills else ''}\n"
+                                                f"Soft навички: {','.join(resume.soft_skills) if resume.soft_skills else ''}\n"
                                                 f"Посилання на ваші проекти: {' , '.join(resume.projects) if resume.projects else ''}\n"
                                                 f"Мови: {','.join(resume.lang) if resume.lang else ''}\n"
                                                 f"Рівень знання цих мов: {','.join(resume.lang_level) if resume.lang_level else ''}\n"
@@ -454,9 +456,9 @@ async def end_message(message):
                                                 f"Ваші очікування від роботи: {resume.description}\n"
                                                 f"Досвід роботи: {','.join(resume.past_work) if resume.past_work else ''}\n"
                                                 f"Що ви робили на минулій посаді: {','.join(resume.job_description) if resume.job_description else ''}\n"
-                                                f"Скільки часу ви займали цю посаду: {','.join(resume.how_long) if resume.how_long else ''}\n"
+                                                f"Як довго ви займали цю посаду: {','.join(resume.how_long) if resume.how_long else ''}\n"
                                                 "\n"
-                                                "Чи хочете відредагувати свої дані?\n", reply_markup=end_keyboard)
+                                                "Чи ви хочете відредагувати свої дані?\n", reply_markup=end_keyboard)
 
 
 @dp.callback_query_handler(state='*')
@@ -466,38 +468,38 @@ async def bot_changes(callback: types.callback_query):
     elif callback.data == '16':
         resumes = session.query(ResumeBot).filter_by(id=callback.from_user.id).all()
         for resume in resumes:
-            await bot.send_message(callback.from_user.id, f"Все готово.Для того,щоб отримати резюме, перейдіть за посиланням🥳\n"
+            await bot.send_message(callback.from_user.id, f"Все готово. Щоб отримати резюме, перейдіть за посиланням🥳\n"
                                                       "Ваші дані для входу:\n"
                                                       f"ID: {resume.id}\n"
                                                       f"PASSWORD: {resume.password}")
         await bot.send_message(callback.from_user.id, "http://goiteens2.pythonanywhere.com/")
 
     if callback.data == 'name_surname':
-        await bot.send_message(callback.from_user.id, "Виправте прізвище та ім'я")
+        await bot.send_message(callback.from_user.id, "Вкажіть ваші прізвище та ім'я")
         await Steps.name_surname_edit.set()
 
     elif callback.data == 'image':
-        await bot.send_message(callback.from_user.id, "Відправте нове фото")
+        await bot.send_message(callback.from_user.id, "Відправте ваше нове фото")
         await Steps.image_edit.set()
 
     if callback.data == 'phone':
-        await bot.send_message(callback.from_user.id, "Введіть новий номер телефону")
+        await bot.send_message(callback.from_user.id, "Введіть ваш новий номер телефону")
         await Steps.phone_number_edit.set()
 
     if callback.data == 'email':
-        await bot.send_message(callback.from_user.id, "Введіть новий email")
+        await bot.send_message(callback.from_user.id, "Введіть ваш новий email")
         await Steps.email_edit.set()
 
     if callback.data == 'education':
-        await bot.send_message(callback.from_user.id, "Напишіть рівень вашої освіти")
+        await bot.send_message(callback.from_user.id, "Вкажіть рівень вашої освіти, також можете вказати отримані дипломи та курси, пройдені вами(через кому)")
         await Steps.education_edit.set()
 
     if callback.data == 'soft_skills':
-        await bot.send_message(callback.from_user.id, "Напишіть ваші Soft Skills(через кому)")
+        await bot.send_message(callback.from_user.id, "Вкажіть ваші Soft Skills(через кому)")
         await Steps.soft_skills_edit.set()
 
     if callback.data == 'tech_skills':
-        await bot.send_message(callback.from_user.id, "Напишіть ваші Tech Skills(через кому)")
+        await bot.send_message(callback.from_user.id, "Вкажіть ваші Tech Skills(через кому)")
         await Steps.tech_skills_edit.set()
 
     if callback.data == 'projects':
@@ -505,19 +507,19 @@ async def bot_changes(callback: types.callback_query):
         await Steps.projects_edit.set()
 
     if callback.data == 'lang':
-        await bot.send_message(callback.from_user.id, "Напишіть, якими мовами ви володієте(через кому) ")
+        await bot.send_message(callback.from_user.id, "Вкажіть якими мовами ви володієте(через кому) ")
         await Steps.lang_edit.set()
 
     if callback.data == 'lang_level':
-        await bot.send_message(callback.from_user.id, "Напишіть рівні володіння мовами(через кому)")
+        await bot.send_message(callback.from_user.id, "Вкажіть рівні володіння мовами(через кому)")
         await Steps.lang_level_edit.set()
 
     if callback.data == 'country':
-        await bot.send_message(callback.from_user.id, "З якої ви країни?")
+        await bot.send_message(callback.from_user.id, "Вкажіть з якої ви країни?")
         await Steps.country_edit.set()
 
     if callback.data == 'city':
-        await bot.send_message(callback.from_user.id, "З якого ви міста?")
+        await bot.send_message(callback.from_user.id, "Вкажіть з якого ви міста?")
         await Steps.city_edit.set()
 
     if callback.data == 'profession':
@@ -529,20 +531,20 @@ async def bot_changes(callback: types.callback_query):
         await Steps.description_edit.set()
 
     if callback.data == 'work_experience':
-        await bot.send_message(callback.from_user.id,"Напишіть про ваш минулий досвід роботи(через кому)")
+        await bot.send_message(callback.from_user.id,"Вкажіть вашу минулу посаду")
         await Steps.work_experience_edit.set()
 
     if callback.data == 'job_description':
-        await bot.send_message(callback.from_user.id, "Напишіть ваші обов'язки на вашій минулій роботі(через кому)")
+        await bot.send_message(callback.from_user.id, "Напишіть про ваші обов'язки на минулій роботі")
         await Steps.job_description_edit.set()
     if callback.data == 'how_long':
-        await bot.send_message(callback.from_user.id, "Напишіть скільки часу ви працювали на минулій роботі(через кому)")
+        await bot.send_message(callback.from_user.id, "Вкажіть як довго ви працювали на минулій роботі")
         await Steps.how_long_edit.set()
     if callback.data == 'confirm':
         try:
             session.query(ResumeBot).filter_by(id=callback.from_user.id).delete()
             session.commit()
-            await bot.send_message(callback.from_user.id, 'Ваші данні видалено\n'
+            await bot.send_message(callback.from_user.id, 'Ваші дані видалено\n'
                                                           '/start')
         except :
             await bot.send_message(callback.from_user.id, 'Виникла помилка')
@@ -591,7 +593,7 @@ async def image_edit(message: types.Message):
                 await bot.send_message(message.chat.id, 'Ваші дані оновлено')
                 await bot.send_message(message.chat.id, 'Бажаєте змінити ще щось?', reply_markup=end_keyboard)
         elif message.text or message.text.isdigit():
-            await bot.send_message(message.chat.id, 'Що ви намагєтесь зробити?🧐')
+            await bot.send_message(message.chat.id, 'Що ви намагаєтесь зробити?🧐')
     except:
         await bot.send_message(message.chat.id, 'Виникла помилка')
 
